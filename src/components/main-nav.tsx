@@ -146,10 +146,10 @@ export function MainNav() {
                 )}
               >
                 <Icon className={cn(
-                  "mr-3 h-4 w-4 transition-colors",
+                  "mr-3 h-4 w-4 flex-shrink-0 transition-colors",
                   isActive ? "text-slate-700" : "text-slate-500 group-hover:text-slate-700"
                 )} />
-                <span className="tracking-wide">{item.title}</span>
+                <span className="tracking-wide whitespace-nowrap overflow-hidden text-ellipsis">{item.title}</span>
               </Link>
             )
           })}
@@ -161,10 +161,10 @@ export function MainNav() {
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className="w-full justify-start text-slate-500 hover:text-slate-700 hover:bg-slate-50/60"
+              className="w-full justify-start text-slate-500 hover:text-red-600 hover:bg-red-50/60 transition-colors duration-200"
             >
-              <LogOut className="mr-3 h-4 w-4" />
-              <span className="tracking-wide">Cerrar Sesión</span>
+              <LogOut className="mr-3 h-4 w-4 flex-shrink-0" />
+              <span className="tracking-wide whitespace-nowrap">Cerrar Sesión</span>
             </Button>
           </div>
         )}
