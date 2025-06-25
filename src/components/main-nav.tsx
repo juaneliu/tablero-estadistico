@@ -161,10 +161,10 @@ export function MainNav() {
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className="w-full justify-start text-slate-500 hover:text-red-600 hover:bg-red-50 group transition-all duration-200"
+              className="w-full justify-start text-slate-500 hover:text-red-600 hover:bg-gradient-to-r hover:from-red-50/60 hover:to-red-50/40 group transition-colors duration-300 ease-out border border-transparent hover:border-red-100/50"
             >
-              <LogOut className="mr-3 h-4 w-4 flex-shrink-0 group-hover:text-red-600 transition-colors" />
-              <span className="tracking-wide whitespace-nowrap group-hover:text-red-600">Cerrar Sesión</span>
+              <LogOut className="mr-3 h-4 w-4 flex-shrink-0 group-hover:text-red-600 transition-colors duration-300" />
+              <span className="tracking-wide whitespace-nowrap group-hover:text-red-600 transition-colors duration-300">Cerrar Sesión</span>
             </Button>
           </div>
         )}
