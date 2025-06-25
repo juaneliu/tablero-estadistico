@@ -30,7 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 
 # vercel
@@ -39,3 +39,39 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma
+/src/generated/prisma
+
+# backup and temporary files
+*.backup
+*.backup.*
+*-backup.*
+*.tmp
+*.temp
+*~
+
+# documentation files (temporary)
+ACTUALIZACION-*.md
+ESTADO-*.md
+FUNCIONALIDAD-*.md
+ICONOS-*.md
+MEJORAS-*.md
+NOTIFICACIONES-*.md
+OPTIMIZACION-*.md
+ORDEN-*.md
+PERFORMANCE.md
+PESTAÑAS-*.md
+RESUMEN-*.md
+SOLUCION-*.md
+LIMPIEZA-*.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+ehthumbs.db

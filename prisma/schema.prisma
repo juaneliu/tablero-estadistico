@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EntePublico {
+  id              Int                 @id @default(autoincrement())
+  nombre          String
+  ambitoGobierno  String
+  poderGobierno   String
+  controlOIC      Boolean             @default(false)
+  controlTribunal Boolean             @default(false)
+  sistema1        Boolean             @default(false)
+  sistema2        Boolean             @default(false)
+  sistema3        Boolean             @default(false)
+  sistema6        Boolean             @default(false)
+  entidad         Json
+  municipio       String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  directorioOIC   DirectorioOICEnte[]
+
+  @@map("entes_publicos")
+}
+
+model DirectorioOIC {
+  id                Int                 @id @default(autoincrement())
+  oicNombre         String
+  puesto            String
+  nombre            String
+  correoElectronico String
+  telefono          String?
+  direccion         String?
+  entidad           Json
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  entesPublicos     DirectorioOICEnte[]
+
+  @@map("directorio_oic")
+}
+
+model DirectorioOICEnte {
+  id              Int           @id @default(autoincrement())
+  directorioOICId Int
+  entePublicoId   Int
+  directorioOIC   DirectorioOIC @relation(fields: [directorioOICId], references: [id], onDelete: Cascade)
+  entePublico     EntePublico   @relation(fields: [entePublicoId], references: [id], onDelete: Cascade)
+
+  @@unique([directorioOICId, entePublicoId])
+  @@map("directorio_oic_entes")
+}
+
+model Usuario {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  nombre       String
+  apellido     String
+  password     String?
+  rol          RolUsuario @default(INVITADO)
+  activo       Boolean    @default(true)
+  ultimoAcceso DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("usuarios")
+}
+
+model DiagnosticoMunicipal {
+  id                   Int      @id @default(autoincrement())
+  nombreActividad      String
+  municipio            String
+  actividad            String
+  solicitudUrl         String?
+  respuestaUrl         String?
+  unidadAdministrativa String
+  evaluacion           Float
+  observaciones        String?
+  acciones             Json?
+  estado               String   @default("En Proceso")
+  fechaCreacion        DateTime @default(now())
+  fechaActualizacion   DateTime @updatedAt
+  creadoPor            String?
+
+  @@map("diagnosticos_municipales")
+}
+
+model AcuerdoSeguimiento {
+  id                 Int           @id @default(autoincrement())
+  numeroSesion       String
+  tipoSesion         String
+  fechaSesion        DateTime
+  temaAgenda         String
+  descripcionAcuerdo String
+  responsable        String
+  area               String
+  fechaCompromiso    DateTime
+  prioridad          String
+  estado             String        @default("Pendiente")
+  observaciones      String?
+  fechaCreacion      DateTime      @default(now())
+  fechaActualizacion DateTime      @updatedAt
+  creadoPor          String?
+  seguimientos       Seguimiento[]
+
+  @@map("acuerdos_seguimiento")
+}
+
+model Seguimiento {
+  id                 Int                @id @default(autoincrement())
+  acuerdoId          Int
+  seguimiento        String
+  accion             String
+  fechaSeguimiento   DateTime           @default(now())
+  fechaCreacion      DateTime           @default(now())
+  fechaActualizacion DateTime           @updatedAt
+  creadoPor          String?
+  acuerdo            AcuerdoSeguimiento @relation(fields: [acuerdoId], references: [id], onDelete: Cascade)
+
+  @@map("seguimientos")
+}
+
+enum RolUsuario {
+  INVITADO
+  OPERATIVO
+  SEGUIMIENTO
+  ADMINISTRADOR
+}
