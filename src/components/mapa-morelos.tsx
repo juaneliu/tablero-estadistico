@@ -117,7 +117,7 @@ function MetricasDinamicas({ metricas }: { metricas: MetricasMunicipioMapa[] | n
 
   return (
     <>
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardContent className="p-4">
           <div className="flex flex-col items-center text-center">
             <Users className="h-8 w-8 text-blue-600 mb-2" />
@@ -127,7 +127,7 @@ function MetricasDinamicas({ metricas }: { metricas: MetricasMunicipioMapa[] | n
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardContent className="p-4">
           <div className="flex flex-col items-center text-center">
             <Calendar className="h-8 w-8 text-green-600 mb-2" />
@@ -137,7 +137,7 @@ function MetricasDinamicas({ metricas }: { metricas: MetricasMunicipioMapa[] | n
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardContent className="p-4">
           <div className="flex flex-col items-center text-center">
             <BarChart3 className="h-8 w-8 text-purple-600 mb-2" />
@@ -147,7 +147,7 @@ function MetricasDinamicas({ metricas }: { metricas: MetricasMunicipioMapa[] | n
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardContent className="p-4">
           <div className="flex flex-col items-center text-center">
             <TrendingUp className="h-8 w-8 text-orange-600 mb-2" />
@@ -578,17 +578,19 @@ Estado: ${getStatusLabel(datos.promedioEvaluacion, datos.diagnosticosRegistrados
   return (
     <div className="space-y-6">
       {/* Tarjeta principal del mapa */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Mapa de Diagnósticos Municipales
-            <Badge variant="outline" className="ml-auto">
-              {metricas?.length || 0} municipios
-            </Badge>
+      <Card className="bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 border-slate-200/60 dark:border-slate-600/60 shadow-xl backdrop-blur-sm overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/20 via-indigo-200/20 to-purple-200/20 dark:from-blue-800/10 dark:via-indigo-800/10 dark:to-purple-800/10 rounded-full blur-3xl -z-10"></div>
+        <CardHeader className="relative z-10">
+          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
+            <div className="p-1.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-lg">
+              <MapPin className="h-4 w-4 text-white" />
+            </div>
+            <span className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent font-bold">
+              Mapa de Diagnósticos Municipales
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative z-10">
           {error && (
             <div className="mb-4 p-4 border border-red-200 bg-red-50 rounded-lg">
               <div className="flex items-center gap-2">

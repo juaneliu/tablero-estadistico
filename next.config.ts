@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Configuración para acceso desde red local
+  allowedDevOrigins: ['192.168.1.131', '192.168.1.132'],
+  
   // Optimizaciones de rendimiento avanzadas
   experimental: {
     optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react', 'recharts', '@prisma/client'],

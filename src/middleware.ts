@@ -203,11 +203,33 @@ function validateRequest(request: NextRequest): { valid: boolean; reason?: strin
       url.origin,
       'http://localhost:3000',
       'https://localhost:3000',
+      'http://localhost:3001',
+      'https://localhost:3001',
       'http://192.168.1.132:3000',
-      'https://192.168.1.132:3000'
+      'https://192.168.1.132:3000',
+      'http://192.168.1.132:3001',
+      'https://192.168.1.132:3001',
+      'http://192.168.1.131:3000',
+      'https://192.168.1.131:3000',
+      'http://192.168.1.131:3001',
+      'https://192.168.1.131:3001'
     ]
     
-    if (origin && !allowedOrigins.includes(origin)) {
+    // En desarrollo, ser más permisivo con los orígenes
+    if (process.env.NODE_ENV === 'development') {
+      // Permitir cualquier origen de la red local en desarrollo
+      if (origin) {
+        const originUrl = new URL(origin)
+        const isLocalhost = originUrl.hostname === 'localhost' || originUrl.hostname === '127.0.0.1'
+        const isLocalNetwork = originUrl.hostname.startsWith('192.168.') || 
+                              originUrl.hostname.startsWith('10.') || 
+                              originUrl.hostname.startsWith('172.')
+        
+        if (!isLocalhost && !isLocalNetwork && !allowedOrigins.includes(origin)) {
+          return { valid: false, reason: 'Invalid origin' }
+        }
+      }
+    } else if (origin && !allowedOrigins.includes(origin)) {
       return { valid: false, reason: 'Invalid origin' }
     }
   }
