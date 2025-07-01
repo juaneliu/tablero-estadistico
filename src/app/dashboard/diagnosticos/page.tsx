@@ -102,16 +102,15 @@ function DiagnosticosMunicipiosContent() {
     }
   }, [isClient, diagnosticos])
 
-  // Calcular promedio general unificado usando la misma lógica del mapa
+  // Calcular promedio general unificado usando el mismo método que el mapa (promedio de promedios municipales)
   useEffect(() => {
     if (isClient && metricasMapa && metricasMapa.length > 0) {
-      const municipiosConDiagnosticos = metricasMapa.filter(m => m.diagnosticosRegistrados > 0)
-      if (municipiosConDiagnosticos.length === 0) {
-        setPromedioGeneralUnificado(0)
-      } else {
-        const promedio = municipiosConDiagnosticos.reduce((sum, m) => sum + m.promedioEvaluacion, 0) / municipiosConDiagnosticos.length
-        setPromedioGeneralUnificado(promedio)
-      }
+      // Usar el mismo cálculo que el mapa: promedio de promedios municipales (incluye municipios sin diagnósticos)
+      const sumaPromedios = metricasMapa.reduce((sum, m) => sum + m.promedioEvaluacion, 0)
+      const promedio = sumaPromedios / metricasMapa.length
+      setPromedioGeneralUnificado(promedio)
+    } else if (isClient) {
+      setPromedioGeneralUnificado(0)
     }
   }, [isClient, metricasMapa])
 
@@ -124,6 +123,21 @@ function DiagnosticosMunicipiosContent() {
       }
     }
   }, [isClient, searchParams])
+
+  // Refrescar datos cuando se regresa al tablero después de eliminar
+  useEffect(() => {
+    if (isClient) {
+      const viewFromUrl = searchParams.get('view')
+      // Refrescar siempre que se acceda con view=tablero
+      if (viewFromUrl === 'tablero') {
+                        console.log('🔄 Refrescando diagnósticos al regresar a la plataforma...')
+        // Pequeño delay para asegurar que la eliminación se completó
+        setTimeout(() => {
+          fetchDiagnosticos()
+        }, 100)
+      }
+    }
+  }, [isClient, searchParams, fetchDiagnosticos])
 
   // Función para cambiar de vista y actualizar la URL
   const changeView = (newView: string) => {
@@ -383,7 +397,7 @@ function DiagnosticosMunicipiosContent() {
                         ? 'text-emerald-800 dark:text-emerald-200'
                         : 'text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
                     }`}>
-                      Tablero Detallado
+                      Vista Detallada
                     </h3>
                     <p className={`text-sm transition-colors duration-300 ${
                       activeView === 'tablero'
@@ -458,56 +472,61 @@ function DiagnosticosMunicipiosContent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="relative z-10 pt-2">
-                    <div className="flex items-center justify-center">
-                      <div className="relative w-24 h-24">
-                        <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 96 96">
-                          <circle
-                            cx="48"
-                            cy="48"
-                            r="42"
-                            stroke="currentColor"
-                            strokeWidth="6"
-                            fill="transparent"
-                            className="text-gray-200"
-                          />
-                          <circle
-                            cx="48"
-                            cy="48"
-                            r="42"
-                            stroke="url(#gradient1)"
-                            strokeWidth="6"
-                            fill="transparent"
-                            strokeDasharray={`${((estadisticas.completados + estadisticas.enProceso * 0.5) / estadisticas.totalMunicipios) * 263.89} 263.89`}
-                          />
-                          <defs>
-                            <linearGradient id="gradient1">
-                              <stop offset="0%" stopColor="#3B82F6" />
-                              <stop offset="100%" stopColor="#8B5CF6" />
-                            </linearGradient>
-                          </defs>
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                              {Math.round(((estadisticas.completados + estadisticas.enProceso * 0.5) / estadisticas.totalMunicipios) * 100)}%
+                    <div className="flex items-center gap-6">
+                      {/* Gráfica extra grande */}
+                      <div className="flex-1 flex items-center justify-center">
+                        <div className="relative w-40 h-40">
+                          <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 160 160">
+                            <circle
+                              cx="80"
+                              cy="80"
+                              r="70"
+                              stroke="currentColor"
+                              strokeWidth="10"
+                              fill="transparent"
+                              className="text-gray-200"
+                            />
+                            <circle
+                              cx="80"
+                              cy="80"
+                              r="70"
+                              stroke="url(#gradient1)"
+                              strokeWidth="10"
+                              fill="transparent"
+                              strokeDasharray={`${((estadisticas.completados + estadisticas.enProceso * 0.5) / estadisticas.totalMunicipios) * 439.82} 439.82`}
+                            />
+                            <defs>
+                              <linearGradient id="gradient1">
+                                <stop offset="0%" stopColor="#3B82F6" />
+                                <stop offset="100%" stopColor="#8B5CF6" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                {Math.round(((estadisticas.completados + estadisticas.enProceso * 0.5) / estadisticas.totalMunicipios) * 100)}%
+                              </div>
+                              <div className="text-base text-gray-500 font-medium">Avance</div>
                             </div>
-                            <div className="text-xs text-gray-500">Avance</div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="mt-3 space-y-1.5">
-                      <div className="flex justify-between items-center text-sm">
-                        <span>Completados</span>
-                        <span className="font-semibold text-emerald-600">{estadisticas.completados}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm">
-                        <span>En Proceso</span>
-                        <span className="font-semibold text-amber-600">{estadisticas.enProceso}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm">
-                        <span>Pendientes</span>
-                        <span className="font-semibold text-rose-600">{estadisticas.pendientes}</span>
+                      
+                      {/* Valores en columna lateral */}
+                      <div className="flex flex-col space-y-3 min-w-[120px]">
+                        <div className="flex flex-col items-center p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Completados</span>
+                          <span className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{estadisticas.completados}</span>
+                        </div>
+                        <div className="flex flex-col items-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                          <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">En Proceso</span>
+                          <span className="text-xl font-bold text-amber-700 dark:text-amber-300">{estadisticas.enProceso}</span>
+                        </div>
+                        <div className="flex flex-col items-center p-3 bg-rose-50 dark:bg-rose-900/20 rounded-lg border border-rose-200 dark:border-rose-800">
+                          <span className="text-xs text-rose-600 dark:text-rose-400 font-medium">Pendientes</span>
+                          <span className="text-xl font-bold text-rose-700 dark:text-rose-300">{estadisticas.pendientes}</span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

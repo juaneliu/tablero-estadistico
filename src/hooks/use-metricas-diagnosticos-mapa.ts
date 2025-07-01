@@ -67,41 +67,7 @@ const MUNICIPIOS_MORELOS = [
   { id: "17036", name: "Xoxocotla" }
 ]
 
-// Función para generar datos de prueba para municipios sin diagnósticos (opcional)
-const generarDatosPrueba = (municipio: string): Partial<MetricasMunicipioMapa> => {
-  // Solo generar datos de prueba para algunos municipios específicos
-  const municipiosConDatosPrueba = [
-    'Cuernavaca', 'Temixco', 'Tepoztlán', 'Yautepec', 'Tlayacapan',
-    'Jojutla', 'Zacatepec', 'Puente de Ixtla', 'Emiliano Zapata'
-  ]
-  
-  if (!municipiosConDatosPrueba.includes(municipio)) {
-    return {}
-  }
-  
-  // Generar datos aleatorios pero realistas
-  const evaluacionBase = Math.floor(Math.random() * 40) + 50 // 50-90
-  const diagnosticosBase = Math.floor(Math.random() * 3) + 1 // 1-3
-  const accionesBase = diagnosticosBase * (Math.floor(Math.random() * 3) + 2) // 2-4 acciones por diagnóstico
-  
-  return {
-    diagnosticosRegistrados: diagnosticosBase,
-    promedioEvaluacion: evaluacionBase,
-    diagnosticosCompletados: Math.floor(diagnosticosBase * 0.6),
-    diagnosticosEnProceso: Math.ceil(diagnosticosBase * 0.4),
-    diagnosticosPendientes: 0,
-    porcentajeCompletado: Math.floor(60 + Math.random() * 30),
-    tiposActividades: ['Diagnóstico', 'Indicador'].slice(0, Math.floor(Math.random() * 2) + 1),
-    unidadesAdministrativas: ['Dirección de Administración', 'Dirección de Tecnologías'].slice(0, Math.floor(Math.random() * 2) + 1),
-    accionesTotales: accionesBase,
-    accionesCompletadas: Math.floor(accionesBase * 0.7),
-    porcentajeAccionesCompletadas: Math.floor(70 + Math.random() * 25),
-    nivelActividad: diagnosticosBase >= 3 ? 'alto' : 'medio',
-    tendenciaEvaluacion: Math.random() > 0.5 ? 'mejora' : 'estable',
-    alertasCalidad: evaluacionBase < 65 ? ['Evaluación baja'] : [],
-    tiempoPromedioCompletado: Math.floor(Math.random() * 20) + 10 // 10-30 días
-  }
-}
+
 
 export function useMetricasDiagnosticosMapa() {
   const [metricasMunicipios, setMetricasMunicipios] = useState<MetricasMunicipioMapa[]>([])
@@ -172,22 +138,6 @@ export function useMetricasDiagnosticosMapa() {
             return matchMunicipio(d.municipio, municipio.name)
           })
           
-          // Logging especial para Xoxocotla y Hueyapan
-          if (municipio.name === 'Xoxocotla' || municipio.name === 'Hueyapan') {
-            console.log(`🔍 Debug ${municipio.name}:`, {
-              municipioId: municipio.id,
-              municipioName: municipio.name,
-              diagnosticosEncontrados: diagnosticosMunicipio.length,
-              diagnosticosDetalle: diagnosticosMunicipio.map(d => ({
-                id: d.id,
-                municipio: d.municipio,
-                municipioTrimmed: d.municipio?.toLowerCase().trim(),
-                evaluacion: d.evaluacion
-              })),
-              todosLosMunicipiosEnBD: diagnosticos.map(d => d.municipio).filter(Boolean)
-            })
-          }
-          
           const totalDiagnosticos = diagnosticosMunicipio.length
           const completados = diagnosticosMunicipio.filter(d => d.estado === 'Completado').length
           const enProceso = diagnosticosMunicipio.filter(d => d.estado === 'En Proceso').length
@@ -201,6 +151,8 @@ export function useMetricasDiagnosticosMapa() {
           const promedioEvaluacion = evaluaciones.length > 0 
             ? Math.round(evaluaciones.reduce((sum, evaluacion) => sum + evaluacion, 0) / evaluaciones.length)
             : 0
+
+
           
           // Calcular porcentaje de completado
           const porcentajeCompletado = totalDiagnosticos > 0 
@@ -281,31 +233,29 @@ export function useMetricasDiagnosticosMapa() {
               )
             : 0
 
-          // Si no hay datos reales, usar datos de prueba opcionalmente
-          const datosPrueba = totalDiagnosticos === 0 ? generarDatosPrueba(municipio.name) : {}
-          
+          // Solo usar datos reales, sin datos de prueba
           return {
             id: municipio.id,
             name: municipio.name,
-            diagnosticosRegistrados: totalDiagnosticos || datosPrueba.diagnosticosRegistrados || 0,
-            promedioEvaluacion: promedioEvaluacion || datosPrueba.promedioEvaluacion || 0,
-            diagnosticosCompletados: completados || datosPrueba.diagnosticosCompletados || 0,
-            diagnosticosEnProceso: enProceso || datosPrueba.diagnosticosEnProceso || 0,
-            diagnosticosPendientes: pendientes || datosPrueba.diagnosticosPendientes || 0,
-            porcentajeCompletado: porcentajeCompletado || datosPrueba.porcentajeCompletado || 0,
-            tiposActividades: tiposActividades.length > 0 ? tiposActividades : (datosPrueba.tiposActividades || []),
-            unidadesAdministrativas: unidadesAdministrativas.length > 0 ? unidadesAdministrativas : (datosPrueba.unidadesAdministrativas || []),
+            diagnosticosRegistrados: totalDiagnosticos,
+            promedioEvaluacion: promedioEvaluacion,
+            diagnosticosCompletados: completados,
+            diagnosticosEnProceso: enProceso,
+            diagnosticosPendientes: pendientes,
+            porcentajeCompletado: porcentajeCompletado,
+            tiposActividades: tiposActividades,
+            unidadesAdministrativas: unidadesAdministrativas,
             ultimaActualizacion,
             // Nuevas métricas
-            accionesTotales: accionesTotales || datosPrueba.accionesTotales || 0,
-            accionesCompletadas: accionesCompletadas || datosPrueba.accionesCompletadas || 0,
-            porcentajeAccionesCompletadas: porcentajeAccionesCompletadas || datosPrueba.porcentajeAccionesCompletadas || 0,
-            evaluacionPromedio: promedioEvaluacion || datosPrueba.promedioEvaluacion || 0,
+            accionesTotales: accionesTotales,
+            accionesCompletadas: accionesCompletadas,
+            porcentajeAccionesCompletadas: porcentajeAccionesCompletadas,
+            evaluacionPromedio: promedioEvaluacion,
             municipioMejorEvaluado: false, // Se calculará después
-            tendenciaEvaluacion: tendenciaEvaluacion || datosPrueba.tendenciaEvaluacion || 'estable',
-            nivelActividad: nivelActividad || datosPrueba.nivelActividad || 'bajo',
-            alertasCalidad: alertasCalidad.length > 0 ? alertasCalidad : (datosPrueba.alertasCalidad || []),
-            tiempoPromedioCompletado: tiempoPromedioCompletado || datosPrueba.tiempoPromedioCompletado || 0
+            tendenciaEvaluacion: tendenciaEvaluacion,
+            nivelActividad: nivelActividad,
+            alertasCalidad: alertasCalidad,
+            tiempoPromedioCompletado: tiempoPromedioCompletado
           }
         })
 

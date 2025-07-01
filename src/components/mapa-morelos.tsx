@@ -14,6 +14,8 @@ declare global {
     am5map: any
     am5themes_Animated: any
     am5geodata_region_mexico_morLow: any
+    amChartsLoading?: boolean
+    amChartsLoaded?: boolean
   }
 }
 
@@ -103,14 +105,13 @@ function MetricasDinamicas({ metricas }: { metricas: MetricasMunicipioMapa[] | n
   const totalRegistros = hasMounted && metricas ? 
     metricas.reduce((sum, m) => sum + m.diagnosticosRegistrados, 0) : 0
   
-  // Calcular promedio general solo con municipios que tienen diagnósticos
+  // Calcular promedio general como promedio de promedios municipales (incluye municipios sin diagnósticos)
   const promedioGeneral = hasMounted && metricas ? (() => {
-    const municipiosConDiagnosticos = metricas.filter(m => m.diagnosticosRegistrados > 0)
-    if (municipiosConDiagnosticos.length === 0) return 0
+    if (metricas.length === 0) return 0
     
-    // Usar el mismo cálculo que en el hook para consistencia
-    const sumaEvaluaciones = municipiosConDiagnosticos.reduce((sum, m) => sum + m.promedioEvaluacion, 0)
-    const promedio = sumaEvaluaciones / municipiosConDiagnosticos.length
+    // Promedio simple de todos los promedios municipales (incluye 0s de municipios sin diagnósticos)
+    const sumaPromedios = metricas.reduce((sum, m) => sum + m.promedioEvaluacion, 0)
+    const promedio = sumaPromedios / metricas.length
     
     return promedio
   })() : 0
@@ -261,64 +262,76 @@ export function MapaMorelos() {
     ) || null
   }, [metricas])
 
-  // Función para verificar si las librerías están disponibles
-  const areLibrariesReady = useCallback((): boolean => {
-    if (typeof window === 'undefined') return false
-    return !!(window.am5 && window.am5map && window.am5geodata_region_mexico_morLow && window.am5themes_Animated)
-  }, [])
-
-  // Función para cargar scripts de AmCharts
-  const loadAmChartsLibraries = useCallback((): Promise<void> => {
-    console.log('📦 [loadAmChartsLibraries] Iniciando carga...')
+  // Función para verificar si las librerías están disponibles - mejorada
+  const areLibrariesReady = useCallback(() => {
+    const isReady = !!(
+      typeof window !== 'undefined' && 
+      window.am5 && 
+      window.am5map && 
+      window.am5themes_Animated && 
+      window.am5geodata_region_mexico_morLow
+    )
     
-    if (typeof window === 'undefined' || typeof document === 'undefined') {
-      console.log('⚠️ [loadAmChartsLibraries] No estamos en el cliente, abortando')
-      return Promise.reject(new Error('No estamos en el cliente'))
-    }
-
-    const scripts = [
-      '/lib/mapa/index.js',
-      '/lib/mapa/map.js',
-      '/lib/mapa/themes/Animated.js',
-      '/lib/mapa/geodata/region/mexico/morLow.js'
-    ]
-
-    const loadScript = (src: string): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        if (document.querySelector(`script[src="${src}"]`)) {
-          console.log(`✅ [loadScript] Ya cargado: ${src}`)
-          resolve()
-          return
-        }
-
-        const script = document.createElement('script')
-        script.src = src
-        script.async = true
-        
-        script.onload = () => {
-          console.log(`✅ [loadScript] Cargado: ${src}`)
-          resolve()
-        }
-        
-        script.onerror = () => {
-          console.error(`❌ [loadScript] Error: ${src}`)
-          reject(new Error(`Error cargando ${src}`))
-        }
-        
-        document.head.appendChild(script)
+    if (!isReady) {
+      console.log('⚠️ [areLibrariesReady] Librerías no disponibles:', {
+        am5: !!window?.am5,
+        am5map: !!window?.am5map,
+        am5themes_Animated: !!window?.am5themes_Animated,
+        am5geodata_region_mexico_morLow: !!window?.am5geodata_region_mexico_morLow
       })
     }
-
-    return scripts.reduce((promise, script) => {
-      return promise.then(() => loadScript(script))
-    }, Promise.resolve())
-      .then(() => {
-        console.log('🎉 [loadAmChartsLibraries] Todas las librerías cargadas')
-        return new Promise<void>((resolve) => {
-          setTimeout(() => resolve(), 500) // Dar tiempo para que las librerías se inicialicen
-        })
-      })
+    
+    return isReady
   }, [])
+
+  // Función para esperar a que las librerías estén listas
+  const waitForLibraries = useCallback((): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (areLibrariesReady()) {
+        console.log('✅ [waitForLibraries] Librerías ya disponibles')
+        resolve(true)
+        return
+      }
+
+      // Verificar si las librerías se están cargando
+      if (typeof window !== 'undefined' && window.amChartsLoading) {
+        console.log('⏳ [waitForLibraries] Esperando carga de AmCharts...')
+        
+        const checkInterval = setInterval(() => {
+          if (areLibrariesReady() || window.amChartsLoaded) {
+            clearInterval(checkInterval)
+            console.log('✅ [waitForLibraries] Librerías disponibles después de espera')
+            resolve(areLibrariesReady())
+          }
+        }, 100)
+        
+        // Timeout después de 10 segundos
+        setTimeout(() => {
+          clearInterval(checkInterval)
+          console.warn('⚠️ [waitForLibraries] Timeout esperando librerías')
+          resolve(false)
+        }, 10000)
+      } else {
+        console.warn('⚠️ [waitForLibraries] AmCharts no se está cargando')
+        resolve(false)
+      }
+    })
+  }, [areLibrariesReady])
+
+  // Función para cargar scripts de AmCharts - ahora solo espera a que estén listas
+  const loadAmChartsLibraries = useCallback((): Promise<void> => {
+    console.log('📦 [loadAmChartsLibraries] Esperando librerías del layout...')
+    
+    return waitForLibraries().then((ready) => {
+      if (ready) {
+        console.log('🎉 [loadAmChartsLibraries] Librerías listas desde el layout')
+        return Promise.resolve()
+      } else {
+        console.error('❌ [loadAmChartsLibraries] Librerías no disponibles')
+        return Promise.reject(new Error('Librerías AmCharts no disponibles'))
+      }
+    })
+  }, [waitForLibraries])
 
   // Función principal para inicializar el mapa
   const initializeMap = useCallback(() => {
@@ -483,7 +496,7 @@ Estado: ${getStatusLabel(datos.promedioEvaluacion, datos.diagnosticosRegistrados
     // Solo inicializar si las métricas están listas
     const timer = setTimeout(() => {
       if (areLibrariesReady()) {
-        console.log('� [useEffect] Iniciando mapa con métricas disponibles')
+        console.log('🎉 [useEffect] Iniciando mapa con métricas disponibles')
         initializeMap()
       } else {
         console.log('📦 [useEffect] Cargando librerías...')

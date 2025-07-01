@@ -77,6 +77,12 @@ interface Accion {
   completada: boolean
 }
 
+// Contador para generar IDs únicos de manera consistente
+let accionIdCounter = 0
+const generateAccionId = (): string => {
+  return `accion-${++accionIdCounter}-${Date.now()}`
+}
+
 export default function CrearDiagnosticoPage() {
   const router = useRouter()
   const { createDiagnostico } = useDiagnosticosMunicipales()
@@ -109,7 +115,7 @@ export default function CrearDiagnosticoPage() {
 
   const agregarAccion = () => {
     const nuevaAccion: Accion = {
-      id: `accion-${acciones.length + 1}-${Math.random().toString(36).substr(2, 9)}`,
+      id: generateAccionId(),
       descripcion: '',
       urlAccion: '',
       fechaLimite: '',
@@ -288,7 +294,7 @@ export default function CrearDiagnosticoPage() {
         `El diagnóstico municipal para ${values.municipio} ha sido creado exitosamente.`
       )
       
-      // Redirigir al Tablero Detallado
+                      // Redirigir a la Vista Detallada
       router.push('/dashboard/diagnosticos?view=tablero')
       
     } catch (error) {

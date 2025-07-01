@@ -10,6 +10,7 @@ import { ChevronRight, Plus, Trash2, Upload } from "lucide-react"
 import { showError, showSuccess, showConfirm, showUrlValidationError, showLoadingAlert, closeLoadingAlert, forceCloseAllNotifications } from "@/lib/notifications"
 import { MUNICIPIOS_MORELOS } from "@/lib/prisma-service"
 import { cn } from "@/lib/utils"
+import { useDiagnosticosMunicipales } from "@/hooks/use-diagnosticos-municipales"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -57,6 +58,9 @@ export default function EditarDiagnosticoPage() {
   const router = useRouter()
   const params = useParams()
   const diagnosticoId = params.id as string
+  
+  // Hook para manejar diagnósticos
+  const { deleteDiagnostico } = useDiagnosticosMunicipales()
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [acciones, setAcciones] = useState<Accion[]>([])
@@ -207,19 +211,9 @@ Esta acción NO se puede deshacer.`,
         'Por favor espere mientras se elimina la información'
       )
 
-      console.log('🌐 Enviando petición DELETE...')
-      const response = await fetch(`/api/diagnosticos/${diagnosticoId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      console.log('📡 Respuesta recibida:', response.status, response.statusText)
-
-      if (!response.ok) {
-        throw new Error('Error al eliminar el diagnóstico')
-      }
+      console.log('🌐 Usando hook para eliminar diagnóstico...')
+      // Usar el hook que actualiza el estado global automáticamente
+      await deleteDiagnostico(parseInt(diagnosticoId))
 
       console.log('✅ Eliminación exitosa, cerrando loading alert...')
       // Cerrar alerta de carga 
@@ -238,7 +232,7 @@ Esta acción NO se puede deshacer.`,
       )
       
       console.log('🔄 Redirigiendo al tablero...')
-      // Redirigir inmediatamente sin delay
+      // Redirigir inmediatamente - el estado ya está actualizado por el hook
       router.push('/dashboard/diagnosticos?view=tablero')
       
     } catch (error) {

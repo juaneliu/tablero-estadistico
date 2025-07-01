@@ -55,6 +55,7 @@ export default function CrearDirectorioPage() {
   const [openOIC, setOpenOIC] = useState(false)
   const [openEntes, setOpenEntes] = useState(false)
   const [loadingOIC, setLoadingOIC] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
   
   // Refs para los dropdowns
   const oicButtonRef = useRef<HTMLButtonElement>(null)
@@ -76,6 +77,11 @@ export default function CrearDirectorioPage() {
     },
   })
 
+  // Detectar montaje del cliente
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   // Cargar entes con OIC habilitado
   useEffect(() => {
     const cargarEntesConOIC = async () => {
@@ -83,18 +89,26 @@ export default function CrearDirectorioPage() {
         setLoadingOIC(true)
         const entesOIC = await getEntesConOIC()
         
+        console.log('🔍 [DirectorioCrear] Entes con OIC obtenidos:', entesOIC)
+        console.log('🔍 [DirectorioCrear] Directorios existentes:', directorios)
+        
         // Filtrar OICs que ya están registrados en el directorio
         const oicsYaRegistrados = directorios.map(directorio => directorio.oicNombre)
+        console.log('🔍 [DirectorioCrear] OICs ya registrados:', oicsYaRegistrados)
+        
         const entesOICDisponibles = entesOIC.filter((ente: any) => 
           !oicsYaRegistrados.includes(ente.nombre)
         )
+        
+        console.log('🔍 [DirectorioCrear] Entes OIC disponibles después del filtro:', entesOICDisponibles)
         
         setEntesConOIC(entesOICDisponibles.map((ente: any) => ({
           id: ente.id,
           nombre: ente.nombre
         })))
       } catch (error) {
-        console.error('Error cargando entes con OIC:', error)
+        console.error('❌ [DirectorioCrear] Error cargando entes con OIC:', error)
+        showError('Error al cargar entes con OIC')
       } finally {
         setLoadingOIC(false)
       }
@@ -108,7 +122,9 @@ export default function CrearDirectorioPage() {
 
   // Actualizar los IDs de entes seleccionados en el formulario
   useEffect(() => {
-    form.setValue("entesPublicosIds", selectedEntes.map(e => e.id))
+    const ids = selectedEntes.map(e => e.id)
+    console.log('🔍 [useEffect sync] Sincronizando form con selectedEntes:', ids)
+    form.setValue("entesPublicosIds", ids)
   }, [selectedEntes, form])
 
   // Cerrar dropdowns al hacer click fuera
@@ -155,6 +171,9 @@ export default function CrearDirectorioPage() {
 
   // Función para abrir dropdown Entes
   const handleOpenEntes = () => {
+    console.log('🔍 [handleOpenEntes] Abriendo dropdown de entes')
+    console.log('🔍 [handleOpenEntes] Entes seleccionados al abrir:', selectedEntes.map(e => `${e.id}: ${e.nombre}`))
+    
     if (entesContainerRef.current) {
       setEntesDropdownPosition(calculateDropdownPosition(entesContainerRef))
     }
@@ -164,18 +183,23 @@ export default function CrearDirectorioPage() {
 
   // Debug: Verificar cuando se cargan los entes
   useEffect(() => {
-    // Solo loggear si hay problemas de carga
+    console.log('🔍 [useEffect entes] Entes cargados:', entes.length, 'Loading:', loading)
     if (entes.length === 0 && !loading) {
-      console.warn('No se encontraron entes públicos')
+      console.warn('⚠️ No se encontraron entes públicos')
     }
   }, [entes, loading])
 
   useEffect(() => {
-    // Solo loggear si hay problemas de carga
+    console.log('🔍 [useEffect entesConOIC] Entes con OIC:', entesConOIC.length, 'Loading:', loadingOIC)
     if (entesConOIC.length === 0 && !loadingOIC) {
-      console.warn('No se encontraron entes con OIC')
+      console.warn('⚠️ No se encontraron entes con OIC')
     }
   }, [entesConOIC, loadingOIC])
+
+  // Debug: Verificar cuando cambian los entes seleccionados
+  useEffect(() => {
+    console.log('🔍 [useEffect selectedEntes] Entes seleccionados cambiaron:', selectedEntes)
+  }, [selectedEntes])
 
   const onSubmit = async (values: FormData) => {
     // Validación personalizada de campos obligatorios
@@ -265,9 +289,21 @@ export default function CrearDirectorioPage() {
   }
 
   const handleSelectEnte = (ente: {id: number, nombre: string}) => {
-    if (!selectedEntes.find(e => e.id === ente.id)) {
-      setSelectedEntes(prev => [...prev, ente])
+    console.log('🔍 [handleSelectEnte] Intentando seleccionar ente:', ente)
+    console.log('🔍 [handleSelectEnte] Entes seleccionados antes:', selectedEntes)
+    
+    // Verificar que el ente no esté ya seleccionado
+    const yaSeleccionado = selectedEntes.find(e => e.id === ente.id)
+    if (yaSeleccionado) {
+      console.warn('⚠️ [handleSelectEnte] Ente ya seleccionado, ignorando:', ente.nombre)
+      setOpenEntes(false)
+      return
     }
+    
+    const nuevosEntes = [...selectedEntes, ente]
+    setSelectedEntes(nuevosEntes)
+    console.log('✅ [handleSelectEnte] Ente agregado. Nuevos entes seleccionados:', nuevosEntes)
+    
     setOpenEntes(false)
     // Limpiar error si existe
     if (form.formState.errors.entesPublicosIds) {
@@ -276,7 +312,12 @@ export default function CrearDirectorioPage() {
   }
 
   const handleRemoveEnte = (enteId: number) => {
-    setSelectedEntes(prev => prev.filter(e => e.id !== enteId))
+    console.log('🔍 [handleRemoveEnte] Removiendo ente con ID:', enteId)
+    console.log('🔍 [handleRemoveEnte] Entes seleccionados antes:', selectedEntes)
+    
+    const nuevosEntes = selectedEntes.filter(e => e.id !== enteId)
+    setSelectedEntes(nuevosEntes)
+    console.log('✅ [handleRemoveEnte] Ente removido. Nuevos entes seleccionados:', nuevosEntes)
   }
 
   // Función para manejar cambios en el campo OIC
@@ -328,120 +369,318 @@ export default function CrearDirectorioPage() {
 
           {/* Formulario */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full relative z-10">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full relative z-10">
               
-              {/* Selección de OIC y Entes */}
-              <Card className="bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 border-slate-200/60 dark:border-slate-600/60 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm relative">
+              {/* Contenedor Principal del Formulario */}
+              <Card className="bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 border-slate-200/60 dark:border-slate-600/60 shadow-xl backdrop-blur-sm relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/20 via-indigo-200/20 to-purple-200/20 dark:from-blue-800/10 dark:via-indigo-800/10 dark:to-purple-800/10 rounded-full blur-3xl -z-10"></div>
-                <CardHeader className="relative z-10">
-                  <CardTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <Users2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                    Selección de OIC y Entes Públicos
-                  </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
-                    Selecciona el Órgano Interno de Control y los entes públicos asociados
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-8 pt-0 relative z-10" style={{ overflow: 'visible' }}>
-                  <div className="md:grid md:grid-cols-2 gap-8">
+                
+                <CardContent className="p-8 space-y-8">
+                  {/* Selección de OIC y Entes */}
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <Users2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        Selección de OIC y Entes Públicos
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">
+                        Selecciona el Órgano Interno de Control y los entes públicos asociados
+                      </p>
+                    </div>
                     
-                    {/* Órgano Interno de Control */}
-                    <FormField
-                      control={form.control}
-                      name="oicNombre"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
-                            Órgano Interno de Control <span className="text-red-500 font-bold text-lg ml-1">*</span>
-                          </FormLabel>
-                          <div className="relative z-20" data-dropdown-container>
-                            <FormControl>
-                              <Button
-                                ref={oicButtonRef}
-                                type="button"
-                                variant="outline"
-                                role="combobox"
-                                onClick={handleOpenOIC}
+                    <div className="md:grid md:grid-cols-2 gap-8">
+                      {/* Órgano Interno de Control */}
+                      <FormField
+                        control={form.control}
+                        name="oicNombre"
+                        render={({ field, fieldState }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
+                              Órgano Interno de Control <span className="text-red-500 font-bold text-lg ml-1">*</span>
+                            </FormLabel>
+                            <div className="relative z-20" data-dropdown-container>
+                              <FormControl>
+                                <Button
+                                  ref={oicButtonRef}
+                                  type="button"
+                                  variant="outline"
+                                  role="combobox"
+                                  onClick={handleOpenOIC}
+                                  className={cn(
+                                    "w-full justify-between h-12 text-left bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-white dark:hover:bg-slate-700 transition-all duration-300",
+                                    !field.value && "text-muted-foreground",
+                                    fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
+                                  )}
+                                >
+                                  <span className="truncate flex-1 text-left mr-2">
+                                    {field.value || "Buscar y seleccionar OIC"}
+                                  </span>
+                                  <ChevronDown className="h-4 w-4 shrink-0 opacity-50 ml-2" />
+                                </Button>
+                              </FormControl>
+                            </div>
+                            <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                              Seleccione el ente público que tiene habilitado el Órgano Interno de Control.
+                            </FormDescription>
+                            <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
+                              {fieldState.error && (
+                                <>
+                                  <X className="h-4 w-4" />
+                                  {fieldState.error.message}
+                                </>
+                              )}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Entes Públicos */}
+                      <FormField
+                        control={form.control}
+                        name="entesPublicosIds"
+                        render={({ field, fieldState }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
+                              Ente(s) Público(s) <span className="text-red-500 font-bold text-lg ml-1">*</span>
+                            </FormLabel>
+                            <div className="relative w-full z-20" data-dropdown-container>
+                              <div 
+                                ref={entesContainerRef}
                                 className={cn(
-                                  "w-full justify-between h-12 text-left bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-white dark:hover:bg-slate-700 transition-all duration-300",
-                                  !field.value && "text-muted-foreground",
+                                  "flex flex-wrap gap-2 p-3 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-600 rounded-lg min-h-[48px] transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer",
                                   fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
                                 )}
+                                onClick={handleOpenEntes}
                               >
-                                <span className="truncate flex-1 text-left mr-2">
-                                  {field.value || "Buscar y seleccionar OIC"}
-                                </span>
-                                <ChevronDown className="h-4 w-4 shrink-0 opacity-50 ml-2" />
-                              </Button>
-                            </FormControl>
-                            
-                          </div>
-                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
-                            Seleccione el ente público que tiene habilitado el Órgano Interno de Control.
-                          </FormDescription>
-                          <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
-                            {fieldState.error && (
-                              <>
-                                <X className="h-4 w-4" />
-                                {fieldState.error.message}
-                              </>
-                            )}
-                          </FormMessage>
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Entes Públicos */}
-                    <FormField
-                      control={form.control}
-                      name="entesPublicosIds"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
-                            Ente(s) Público(s) <span className="text-red-500 font-bold text-lg ml-1">*</span>
-                          </FormLabel>
-                          <div className="relative w-full z-20" data-dropdown-container>
-                            <div 
-                              ref={entesContainerRef}
-                              className={cn(
-                                "flex flex-wrap gap-2 p-3 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200 dark:border-slate-600 rounded-lg min-h-[48px] transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer",
-                                fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
-                              )}
-                              onClick={handleOpenEntes}
-                            >
-                              {selectedEntes.length > 0 ? (
-                                selectedEntes.map((ente) => (
-                                  <div 
-                                    key={ente.id} 
-                                    className="flex items-center gap-2 bg-white/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-md text-sm hover:bg-blue-100 dark:hover:bg-slate-600 transition-all duration-200"
-                                  >
-                                    <Building2 className="h-3 w-3" />
-                                    <span>{ente.nombre}</span>
-                                    <button
-                                      type="button"
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleRemoveEnte(ente.id)
-                                      }}
-                                      className="hover:text-red-500 transition-colors duration-200 p-0.5"
+                                {selectedEntes.length > 0 ? (
+                                  selectedEntes.map((ente) => (
+                                    <div 
+                                      key={ente.id} 
+                                      className="flex items-center gap-2 bg-white/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 px-3 py-1.5 rounded-md text-sm hover:bg-blue-100 dark:hover:bg-slate-600 transition-all duration-200"
                                     >
-                                      <X className="h-3 w-3" />
-                                    </button>
-                                  </div>
-                                ))
-                              ) : (
-                                <span className="text-muted-foreground self-center text-sm pointer-events-none">
-                                  Buscar y seleccionar Entes Públicos
-                                </span>
-                              )}
-                              <div className="ml-auto self-center">
-                                <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                                      <Building2 className="h-3 w-3" />
+                                      <span>{ente.nombre}</span>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleRemoveEnte(ente.id)
+                                        }}
+                                        className="hover:text-red-500 transition-colors duration-200 p-0.5"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <span className="text-muted-foreground self-center text-sm pointer-events-none">
+                                    Buscar y seleccionar Entes Públicos
+                                  </span>
+                                )}
+                                <div className="ml-auto self-center">
+                                  <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                                </div>
                               </div>
                             </div>
-                            
-                          </div>
+                            <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                              Seleccione uno o más Entes Públicos asociados. Solo se muestran entes que no tienen OIC habilitado.
+                            </FormDescription>
+                            <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
+                              {fieldState.error && (
+                                <>
+                                  <X className="h-4 w-4" />
+                                  {fieldState.error.message}
+                                </>
+                              )}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Datos del Responsable */}
+                  <div className="space-y-6 border-t border-slate-200/60 dark:border-slate-600/60 pt-8">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <Users2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                        Datos del Responsable
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">
+                        Información personal del funcionario responsable del OIC
+                      </p>
+                    </div>
+                    
+                    <div className="md:grid md:grid-cols-2 gap-8">
+                      <FormField
+                        control={form.control}
+                        name="puesto"
+                        render={({ field, fieldState }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
+                              Puesto <span className="text-red-500 font-bold text-lg ml-1">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Ej: Contralor Interno, Auditor, etc." 
+                                {...field} 
+                                className={cn(
+                                  "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
+                                  fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
+                                )}
+                              />
+                            </FormControl>
+                            <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                              Ingrese el puesto o cargo que ocupa.
+                            </FormDescription>
+                            <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
+                              {fieldState.error && (
+                                <>
+                                  <X className="h-4 w-4" />
+                                  {fieldState.error.message}
+                                </>
+                              )}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="nombre"
+                        render={({ field, fieldState }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
+                              Nombre <span className="text-red-500 font-bold text-lg ml-1">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Nombre completo del funcionario" 
+                                {...field} 
+                                className={cn(
+                                  "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
+                                  fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
+                                )}
+                              />
+                            </FormControl>
+                            <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                              Ingrese su nombre completo.
+                            </FormDescription>
+                            <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
+                              {fieldState.error && (
+                                <>
+                                  <X className="h-4 w-4" />
+                                  {fieldState.error.message}
+                                </>
+                              )}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="correoElectronico"
+                        render={({ field, fieldState }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
+                              Correo Electrónico <span className="text-red-500 font-bold text-lg ml-1">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="email" 
+                                placeholder="correo@ejemplo.com" 
+                                {...field} 
+                                className={cn(
+                                  "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
+                                  fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
+                                )}
+                              />
+                            </FormControl>
+                            <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                              Ingrese su correo electrónico oficial.
+                            </FormDescription>
+                            <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
+                              {fieldState.error && (
+                                <>
+                                  <X className="h-4 w-4" />
+                                  {fieldState.error.message}
+                                </>
+                              )}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="telefono"
+                        render={({ field, fieldState }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
+                              Teléfono (opcional)
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="tel" 
+                                placeholder="7771234567" 
+                                maxLength={10}
+                                {...field} 
+                                className={cn(
+                                  "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
+                                  fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
+                                )}
+                              />
+                            </FormControl>
+                            <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                              Ingrese su número de teléfono (10 dígitos).
+                            </FormDescription>
+                            <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
+                              {fieldState.error && (
+                                <>
+                                  <X className="h-4 w-4" />
+                                  {fieldState.error.message}
+                                </>
+                              )}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Información de Contacto */}
+                  <div className="space-y-6 border-t border-slate-200/60 dark:border-slate-600/60 pt-8">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <Building2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                        Información de Contacto
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">
+                        Dirección física del funcionario (opcional)
+                      </p>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="direccion"
+                      render={({ field, fieldState }) => (
+                        <FormItem className="space-y-3">
+                          <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
+                            Dirección (opcional)
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Dirección completa" 
+                              {...field} 
+                              className={cn(
+                                "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
+                                fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
+                              )}
+                            />
+                          </FormControl>
                           <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
-                            Seleccione uno o más Entes Públicos asociados. Solo se muestran entes que no tienen OIC habilitado.
+                            Ingrese su dirección completa (opcional).
                           </FormDescription>
                           <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
                             {fieldState.error && (
@@ -454,228 +693,27 @@ export default function CrearDirectorioPage() {
                         </FormItem>
                       )}
                     />
+                    
+                    {/* Botón de Crear Registro */}
+                    <div className="flex justify-end pt-6 border-t border-slate-200/60 dark:border-slate-600/60">
+                      <Button 
+                        type="submit" 
+                        size="sm"
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-6"
+                      >
+                        Crear Registro
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Datos del Responsable */}
-              <Card className="bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 border-slate-200/60 dark:border-slate-600/60 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-200/20 via-purple-200/20 to-pink-200/20 dark:from-indigo-800/10 dark:via-purple-800/10 dark:to-pink-800/10 rounded-full blur-3xl -z-10"></div>
-                <CardHeader className="relative z-10">
-                  <CardTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <Users2 className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                    Datos del Responsable
-                  </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
-                    Información personal del funcionario responsable del OIC
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-8 pt-0 relative z-10">
-                  <div className="md:grid md:grid-cols-2 gap-8">
-                    <FormField
-                      control={form.control}
-                      name="puesto"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
-                            Puesto <span className="text-red-500 font-bold text-lg ml-1">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Ej: Contralor Interno, Auditor, etc." 
-                              {...field} 
-                              className={cn(
-                                "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
-                                fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
-                              )}
-                            />
-                          </FormControl>
-                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
-                            Ingrese el puesto o cargo que ocupa.
-                          </FormDescription>
-                          <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
-                            {fieldState.error && (
-                              <>
-                                <X className="h-4 w-4" />
-                                {fieldState.error.message}
-                              </>
-                            )}
-                          </FormMessage>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="nombre"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
-                            Nombre <span className="text-red-500 font-bold text-lg ml-1">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Nombre completo del funcionario" 
-                              {...field} 
-                              className={cn(
-                                "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
-                                fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
-                              )}
-                            />
-                          </FormControl>
-                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
-                            Ingrese su nombre completo.
-                          </FormDescription>
-                          <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
-                            {fieldState.error && (
-                              <>
-                                <X className="h-4 w-4" />
-                                {fieldState.error.message}
-                              </>
-                            )}
-                          </FormMessage>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="correoElectronico"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
-                            Correo Electrónico <span className="text-red-500 font-bold text-lg ml-1">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email"
-                              placeholder="correo@ejemplo.com" 
-                              {...field} 
-                              className={cn(
-                                "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
-                                fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
-                              )}
-                            />
-                          </FormControl>
-                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
-                            Ingrese una dirección de correo electrónico válida.
-                          </FormDescription>
-                          <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
-                            {fieldState.error && (
-                              <>
-                                <X className="h-4 w-4" />
-                                {fieldState.error.message}
-                              </>
-                            )}
-                          </FormMessage>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="telefono"
-                      render={({ field, fieldState }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
-                            Teléfono (opcional)
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Número de teléfono" 
-                              {...field} 
-                              maxLength={10}
-                              onInput={(e) => {
-                                // Solo permitir números
-                                const target = e.target as HTMLInputElement;
-                                target.value = target.value.replace(/\D/g, '');
-                                field.onChange(target.value);
-                              }}
-                              className={cn(
-                                "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
-                                fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
-                              )}
-                            />
-                          </FormControl>
-                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
-                            Ingrese un número de teléfono de 10 dígitos (opcional).
-                          </FormDescription>
-                          <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
-                            {fieldState.error && (
-                              <>
-                                <X className="h-4 w-4" />
-                                {fieldState.error.message}
-                              </>
-                            )}
-                          </FormMessage>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Dirección */}
-              <Card className="bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 border-slate-200/60 dark:border-slate-600/60 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/20 via-pink-200/20 to-rose-200/20 dark:from-purple-800/10 dark:via-pink-800/10 dark:to-rose-800/10 rounded-full blur-3xl -z-10"></div>
-                <CardHeader className="relative z-10">
-                  <CardTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <Building2 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                    Información de Contacto
-                  </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-300">
-                    Dirección física del funcionario (opcional)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-8 pt-0 relative z-10">
-                  <FormField
-                    control={form.control}
-                    name="direccion"
-                    render={({ field, fieldState }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel className="text-base font-semibold text-slate-700 dark:text-slate-200">
-                          Dirección (opcional)
-                        </FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Dirección completa" 
-                            {...field} 
-                            className={cn(
-                              "h-12 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300",
-                              fieldState.error && "border-red-500 bg-red-50/50 dark:bg-red-900/20"
-                            )}
-                          />
-                        </FormControl>
-                        <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
-                          Ingrese su dirección completa (opcional).
-                        </FormDescription>
-                        <FormMessage className="text-red-600 dark:text-red-400 flex items-center gap-1 text-sm">
-                          {fieldState.error && (
-                            <>
-                              <X className="h-4 w-4" />
-                              {fieldState.error.message}
-                            </>
-                          )}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-
-              <Button 
-                type="submit" 
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-12 px-8"
-              >
-                Crear Registro
-              </Button>
             </form>
           </Form>
         </div>
       </div>
 
       {/* Portal para dropdown OIC */}
-      {openOIC && typeof window !== 'undefined' && createPortal(
+      {isMounted && openOIC && createPortal(
         <div 
           className="fixed inset-0 z-[200]" 
           onClick={() => setOpenOIC(false)}
@@ -699,7 +737,16 @@ export default function CrearDirectorioPage() {
                 </div>
               ) : entesConOIC.length === 0 ? (
                 <div className="px-4 py-8 text-center text-slate-600 dark:text-slate-300">
-                  No hay entes con OIC disponibles para asignar.
+                  <div className="text-center">
+                    <p className="font-medium mb-2">No hay entes con OIC disponibles para asignar.</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Esto puede deberse a que:
+                    </p>
+                    <ul className="text-sm text-slate-500 dark:text-slate-400 mt-2 space-y-1">
+                      <li>• Todos los entes con OIC ya han sido registrados</li>
+                      <li>• No existen entes con la opción "Control OIC" habilitada</li>
+                    </ul>
+                  </div>
                 </div>
               ) : (
                 entesConOIC.map((ente) => (
@@ -724,7 +771,7 @@ export default function CrearDirectorioPage() {
       )}
 
       {/* Portal para dropdown Entes */}
-      {openEntes && typeof window !== 'undefined' && createPortal(
+      {isMounted && openEntes && createPortal(
         <div 
           className="fixed inset-0 z-[200]" 
           onClick={() => setOpenEntes(false)}
@@ -757,14 +804,55 @@ export default function CrearDirectorioPage() {
                 </div>
               ) : (
                 (() => {
-                  const entesYaAsignados = directorios.flatMap(directorio => 
-                    directorio.entesPublicosIds || []
-                  )
+                  console.log('🔍 [EntesDropdown] === INICIANDO FILTRADO ===')
+                  console.log('🔍 [EntesDropdown] Directorios completos:', directorios)
                   
-                  const entesDisponibles = entes
-                    .filter(ente => !ente.controlOIC)
-                    .filter(ente => !selectedEntes.find(e => e.id === ente.id))
-                    .filter(ente => !entesYaAsignados.includes(ente.id!))
+                  // Extraer todos los entes asignados de los directorios existentes
+                  const entesYaAsignados = directorios.flatMap(directorio => {
+                    console.log('🔍 [EntesDropdown] Procesando directorio:', directorio)
+                    console.log('🔍 [EntesDropdown] - OIC:', directorio.oicNombre)
+                    console.log('🔍 [EntesDropdown] - entesPublicosIds:', directorio.entesPublicosIds)
+                    console.log('🔍 [EntesDropdown] - entesPublicos:', directorio.entesPublicos)
+                    
+                    // Intentar obtener los IDs de diferentes formas posibles
+                    let ids: number[] = []
+                    if (directorio.entesPublicosIds) {
+                      ids = directorio.entesPublicosIds
+                    } else if (directorio.entesPublicos) {
+                      ids = directorio.entesPublicos.map((ente: any) => ente.id)
+                    }
+                    
+                    console.log('🔍 [EntesDropdown] - IDs extraídos:', ids)
+                    return ids
+                  })
+                  
+                  console.log('🔍 [EntesDropdown] Entes totales:', entes.length)
+                  console.log('🔍 [EntesDropdown] Entes seleccionados actualmente:', selectedEntes.map(e => `${e.id}: ${e.nombre}`))
+                  console.log('🔍 [EntesDropdown] Entes ya asignados en otros directorios (IDs):', entesYaAsignados)
+                  
+                  // Filtrar entes paso a paso para mejor debugging
+                  const entesSinOIC = entes.filter(ente => !ente.controlOIC)
+                  console.log('🔍 [EntesDropdown] Paso 1 - Entes sin OIC:', entesSinOIC.length, entesSinOIC.map(e => `${e.id}: ${e.nombre}`))
+                  
+                  const entesNoSeleccionados = entesSinOIC.filter(ente => {
+                    const yaSeleccionado = selectedEntes.some(selectedEnte => selectedEnte.id === ente.id)
+                    if (yaSeleccionado) {
+                      console.log(`🚫 [EntesDropdown] Ente ${ente.id}: ${ente.nombre} ya está seleccionado, excluyendo`)
+                    }
+                    return !yaSeleccionado
+                  })
+                  console.log('🔍 [EntesDropdown] Paso 2 - Entes no seleccionados:', entesNoSeleccionados.length, entesNoSeleccionados.map(e => `${e.id}: ${e.nombre}`))
+                  
+                  const entesDisponibles = entesNoSeleccionados.filter(ente => {
+                    const yaAsignado = entesYaAsignados.includes(ente.id!)
+                    console.log(`🔍 [EntesDropdown] Verificando ente ${ente.id}: ${ente.nombre} - ¿Ya asignado? ${yaAsignado}`)
+                    if (yaAsignado) {
+                      console.log(`🚫 [EntesDropdown] Ente ${ente.id}: ${ente.nombre} ya está asignado a otro directorio, excluyendo`)
+                    }
+                    return !yaAsignado
+                  })
+                  console.log('🔍 [EntesDropdown] Paso 3 - Entes disponibles finales:', entesDisponibles.length, entesDisponibles.map(e => `${e.id}: ${e.nombre}`))
+                  console.log('🔍 [EntesDropdown] === FIN FILTRADO ===')
                   
                   if (entesDisponibles.length === 0) {
                     return (

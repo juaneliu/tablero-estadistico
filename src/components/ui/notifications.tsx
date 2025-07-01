@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext, useContext } from 'react'
 import { createPortal } from 'react-dom'
 import { CheckCircle, XCircle, AlertCircle, Loader2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -34,6 +34,12 @@ const notificationState: {
   setNotifications: null
 }
 
+// Contador para generar IDs únicos de manera consistente
+let idCounter = 0
+const generateId = (): string => {
+  return `notification-${++idCounter}-${Date.now()}`
+}
+
 // Hook para manejar notificaciones
 export function useNotifications() {
   const [notifications, setNotifications] = useState<NotificationState[]>([])
@@ -45,7 +51,7 @@ export function useNotifications() {
 
   const showNotification = (options: NotificationOptions): Promise<{ isConfirmed: boolean }> => {
     return new Promise((resolve) => {
-      const id = Math.random().toString(36).substr(2, 9)
+      const id = generateId()
       const notification: NotificationState = {
         ...options,
         id,
@@ -98,7 +104,7 @@ export const showSuccess = async (title: string, message?: string): Promise<{ is
   }
   
   return new Promise((resolve) => {
-    const id = Math.random().toString(36).substr(2, 9)
+    const id = generateId()
     const notification: NotificationState = {
       id,
       title,
@@ -125,7 +131,7 @@ export const showError = async (title: string, message?: string): Promise<{ isCo
   }
   
   return new Promise((resolve) => {
-    const id = Math.random().toString(36).substr(2, 9)
+    const id = generateId()
     const notification: NotificationState = {
       id,
       title,
@@ -151,7 +157,7 @@ export const showWarning = async (title: string, message?: string): Promise<{ is
   }
   
   return new Promise((resolve) => {
-    const id = Math.random().toString(36).substr(2, 9)
+    const id = generateId()
     const notification: NotificationState = {
       id,
       title,
@@ -186,7 +192,7 @@ export const showLoadingAlert = async (title: string, message?: string): Promise
     notificationState.setNotifications!(prev => prev.filter(n => n.id !== loadingNotificationId))
   }
   
-  const id = Math.random().toString(36).substr(2, 9)
+  const id = generateId()
   loadingNotificationId = id
   
   console.log('📝 Nuevo loading alert ID:', id)
@@ -250,7 +256,7 @@ export const showConfirm = async (
   }
   
   return new Promise((resolve) => {
-    const id = Math.random().toString(36).substr(2, 9)
+    const id = generateId()
     const notification: NotificationState = {
       id,
       title,
@@ -394,11 +400,16 @@ function NotificationItem({ notification }: { notification: NotificationState })
 // Componente principal del sistema de notificaciones
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const { notifications } = useNotifications()
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   return (
     <>
       {children}
-      {typeof window !== 'undefined' && notifications.length > 0 && createPortal(
+      {isMounted && notifications.length > 0 && createPortal(
         <div className="notification-container">
           {notifications.map(notification => (
             <NotificationItem key={notification.id} notification={notification} />

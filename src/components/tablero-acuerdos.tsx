@@ -476,7 +476,7 @@ export function TableroAcuerdos() {
                 <Calendar className="h-6 w-6 text-white" />
               </div>
               <span className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent font-bold">
-                Tablero de Acuerdos y Seguimientos
+                Plataforma de Acuerdos y Seguimientos
               </span>
             </CardTitle>
             <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
@@ -582,25 +582,25 @@ export function TableroAcuerdos() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200/60 dark:border-slate-600/60 bg-gradient-to-r from-slate-50/80 via-blue-50/60 to-indigo-50/40 dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-600/40">
-                    <th className="h-12 px-4 text-left align-middle font-semibold text-slate-700 dark:text-slate-300">
+                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Sesión
                     </th>
-                    <th className="h-12 px-4 text-left align-middle font-semibold text-slate-700 dark:text-slate-300">
+                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Tema/Acuerdo
                     </th>
-                    <th className="h-12 px-4 text-left align-middle font-semibold text-slate-700 dark:text-slate-300">
+                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Responsable
                     </th>
-                    <th className="h-12 px-4 text-left align-middle font-semibold text-slate-700 dark:text-slate-300">
+                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Estado/Prioridad
                     </th>
-                    <th className="h-12 px-4 text-left align-middle font-semibold text-slate-700 dark:text-slate-300">
+                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Fecha Compromiso
                     </th>
-                    <th className="h-12 px-4 text-left align-middle font-semibold text-slate-700 dark:text-slate-300">
+                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Observaciones
                     </th>
-                    <th className="h-12 px-4 text-right align-middle font-semibold text-slate-700 dark:text-slate-300">
+                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Acciones
                     </th>
                   </tr>
@@ -690,7 +690,7 @@ export function TableroAcuerdos() {
                                   </div>
                                 </td>
                                 <td className="p-4 align-middle">
-                                  <div className="text-sm text-slate-600 dark:text-slate-400 max-w-xs">
+                                  <div className="text-sm text-slate-600 dark:text-slate-400 max-w-xs break-words break-all">
                                     {acuerdo.observaciones || '-'}
                                   </div>
                                 </td>
@@ -862,8 +862,8 @@ export function TableroAcuerdos() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4 py-4 relative z-10 overflow-y-auto flex-1 min-h-0">
-              {/* Información principal */}
-              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
+              {/* Información principal - Primera fila: Sesión y Fechas */}
+              <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
                 <div className="p-3 bg-gradient-to-br from-blue-50/80 to-indigo-50/60 dark:from-blue-900/20 dark:to-indigo-900/15 rounded-lg border border-blue-200/40 dark:border-blue-700/40 backdrop-blur-sm">
                   <Label className="text-xs sm:text-sm font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-2">
                     <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -894,43 +894,64 @@ export function TableroAcuerdos() {
                 </div>
               </div>
 
+              {/* Tercera fila: Tema de Agenda y Descripción del Acuerdo */}
               <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
-                <div>
-                  <Label className="text-xs sm:text-sm font-medium text-card-foreground">Tema de Agenda</Label>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">{selectedAcuerdo.temaAgenda}</p>
+                <div className="p-3 bg-gradient-to-br from-violet-50/80 to-purple-50/60 dark:from-violet-900/20 dark:to-purple-900/15 rounded-lg border border-violet-200/40 dark:border-violet-700/40 backdrop-blur-sm">
+                  <Label className="text-xs sm:text-sm font-semibold text-violet-800 dark:text-violet-300 flex items-center gap-2">
+                    <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Tema de Agenda
+                  </Label>
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed">{selectedAcuerdo.temaAgenda}</p>
                 </div>
-                <div>
-                  <Label className="text-xs sm:text-sm font-medium text-card-foreground">Descripción del Acuerdo</Label>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">{selectedAcuerdo.descripcionAcuerdo}</p>
-                </div>
-              </div>
-
-              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
-                <div>
-                  <Label className="text-xs sm:text-sm font-medium text-card-foreground">Responsable</Label>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">{selectedAcuerdo.responsable}</p>
-                </div>
-                <div>
-                  <Label className="text-xs sm:text-sm font-medium">Área</Label>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">{selectedAcuerdo.area}</p>
+                <div className="p-3 bg-gradient-to-br from-indigo-50/80 to-blue-50/60 dark:from-indigo-900/20 dark:to-blue-900/15 rounded-lg border border-indigo-200/40 dark:border-indigo-700/40 backdrop-blur-sm">
+                  <Label className="text-xs sm:text-sm font-semibold text-indigo-800 dark:text-indigo-300 flex items-center gap-2">
+                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Descripción del Acuerdo
+                  </Label>
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed">{selectedAcuerdo.descripcionAcuerdo}</p>
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
-                <div>
-                  <Label className="text-xs sm:text-sm font-medium text-card-foreground">Estado</Label>
+              {/* Segunda fila: Responsable, Área, Estado y Prioridad */}
+              <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
+                <div className="p-3 bg-gradient-to-br from-cyan-50/80 to-blue-50/60 dark:from-cyan-900/20 dark:to-blue-900/15 rounded-lg border border-cyan-200/40 dark:border-cyan-700/40 backdrop-blur-sm">
+                  <Label className="text-xs sm:text-sm font-semibold text-cyan-800 dark:text-cyan-300 flex items-center gap-2">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Responsable
+                  </Label>
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium mt-1">{selectedAcuerdo.responsable}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-rose-50/80 to-pink-50/60 dark:from-rose-900/20 dark:to-pink-900/15 rounded-lg border border-rose-200/40 dark:border-rose-700/40 backdrop-blur-sm">
+                  <Label className="text-xs sm:text-sm font-semibold text-rose-800 dark:text-rose-300 flex items-center gap-2">
+                    <Building className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Área
+                  </Label>
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium mt-1">{selectedAcuerdo.area}</p>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-green-50/80 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/15 rounded-lg border border-green-200/40 dark:border-green-700/40 backdrop-blur-sm">
+                  <Label className="text-xs sm:text-sm font-semibold text-green-800 dark:text-green-300 flex items-center gap-2">
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Estado
+                  </Label>
                   <div className="mt-1">{getEstadoBadge(selectedAcuerdo.estado)}</div>
                 </div>
-                <div>
-                  <Label className="text-xs sm:text-sm font-medium text-card-foreground">Prioridad</Label>
+                <div className="p-3 bg-gradient-to-br from-orange-50/80 to-red-50/60 dark:from-orange-900/20 dark:to-red-900/15 rounded-lg border border-orange-200/40 dark:border-orange-700/40 backdrop-blur-sm">
+                  <Label className="text-xs sm:text-sm font-semibold text-orange-800 dark:text-orange-300 flex items-center gap-2">
+                    <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Prioridad
+                  </Label>
                   <div className="mt-1">{getPrioridadBadge(selectedAcuerdo.prioridad)}</div>
                 </div>
               </div>
 
+              {/* Cuarta fila: Observaciones */}
               {selectedAcuerdo.observaciones && (
-                <div>
-                  <Label className="text-xs sm:text-sm font-medium text-card-foreground">Observaciones</Label>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">{selectedAcuerdo.observaciones}</p>
+                <div className="p-3 bg-gradient-to-br from-slate-50/80 to-gray-50/60 dark:from-slate-900/20 dark:to-gray-900/15 rounded-lg border border-slate-200/40 dark:border-slate-700/40 backdrop-blur-sm">
+                  <Label className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-300 flex items-center gap-2">
+                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+                    Observaciones
+                  </Label>
+                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium mt-1 leading-relaxed break-words break-all">{selectedAcuerdo.observaciones}</p>
                 </div>
               )}
 

@@ -290,267 +290,307 @@ export default function EditarEntePage() {
           {/* Formulario */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
-              {/* Campos básicos */}
-              <div className="md:grid md:grid-cols-1 gap-8">
-                <FormField
-                  control={form.control}
-                  name="nombre"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-700 font-semibold">
-                        Nombre: <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Nombre del Ente Público" 
-                          className={fieldState.error ? "field-error error-shake" : ""}
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="ambitoGobierno"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-700 font-semibold">
-                        Ámbito de Gobierno: <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+              {/* Bloque unificado del formulario */}
+              <div className="p-8 bg-gradient-to-br from-white/70 via-slate-50/60 to-blue-50/40 dark:from-slate-800/70 dark:via-slate-700/60 dark:to-slate-600/40 backdrop-blur-sm rounded-xl border border-slate-200/60 dark:border-slate-600/60 shadow-lg">
+                
+                {/* Campo de nombre individual */}
+                <div className="mb-8">
+                  <FormField
+                    control={form.control}
+                    name="nombre"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">
+                          Nombre del Ente Público: <span className="text-red-500">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <SelectTrigger className={fieldState.error ? "field-error error-shake" : ""}>
-                            <SelectValue placeholder="Selecciona un ámbito" />
-                          </SelectTrigger>
+                          <Input 
+                            placeholder="Ingresa el nombre del ente público" 
+                            className={`bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 shadow-sm ${fieldState.error ? "field-error error-shake" : ""}`}
+                            {...field} 
+                          />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Estatal">Estatal</SelectItem>
-                          <SelectItem value="Federal">Federal</SelectItem>
-                          <SelectItem value="Municipal">Municipal</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="poderGobierno"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-700 font-semibold">
-                        Poder de Gobierno: <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                {/* Primera fila: Ámbito y Poder de Gobierno */}
+                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                  <FormField
+                    control={form.control}
+                    name="ambitoGobierno"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">
+                          Ámbito de Gobierno: <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className={`bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 shadow-sm ${fieldState.error ? "field-error error-shake" : ""}`}>
+                              <SelectValue placeholder="Selecciona un ámbito" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Estatal">Estatal</SelectItem>
+                            <SelectItem value="Federal">Federal</SelectItem>
+                            <SelectItem value="Municipal">Municipal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="poderGobierno"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">
+                          Poder de Gobierno: <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className={`bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 shadow-sm ${fieldState.error ? "field-error error-shake" : ""}`}>
+                              <SelectValue placeholder="Selecciona un poder" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Ejecutivo">Ejecutivo</SelectItem>
+                            <SelectItem value="Judicial">Judicial</SelectItem>
+                            <SelectItem value="Legislativo">Legislativo</SelectItem>
+                            <SelectItem value="Autónomo">Autónomo</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Segunda fila: Órgano Interno de Control y Tribunal de Justicia Administrativa */}
+                <div className="grid lg:grid-cols-2 gap-6 mb-8">
+                  <FormField
+                    control={form.control}
+                    name="controlOIC"
+                    render={({ field }) => (
+                      <FormItem className={`flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm ${
+                        field.value 
+                          ? 'border-green-300/60 bg-gradient-to-r from-green-50/80 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/15'
+                          : 'border-slate-200/50 bg-white/50 dark:bg-slate-800/50'
+                      } backdrop-blur-sm`}>
+                        <div className="space-y-0.5 flex-1 mr-3">
+                          <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">Órgano Interno de Control</FormLabel>
+                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                            Al activar el OIC, solo el sistema S3 estará disponible.
+                          </FormDescription>
+                        </div>
                         <FormControl>
-                          <SelectTrigger className={fieldState.error ? "field-error error-shake" : ""}>
-                            <SelectValue placeholder="Selecciona un poder" />
-                          </SelectTrigger>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Ejecutivo">Ejecutivo</SelectItem>
-                          <SelectItem value="Judicial">Judicial</SelectItem>
-                          <SelectItem value="Legislativo">Legislativo</SelectItem>
-                          <SelectItem value="Autónomo">Autónomo</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Switches especiales */}
-              <div className="md:grid md:grid-cols-1 gap-8">
-                <FormField
-                  control={form.control}
-                  name="controlOIC"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 border-slate-200/50 bg-white/50 backdrop-blur-sm p-4 shadow-sm hover:border-slate-300/70 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-slate-700 font-semibold">Órgano Interno de Control</FormLabel>
-                        <FormDescription className="text-slate-600">
-                          Al activar el Órgano Interno de Control, solo el sistema S3 estará disponible.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="controlTribunal"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 border-slate-200/50 bg-white/50 backdrop-blur-sm p-4 shadow-sm hover:border-slate-300/70 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-slate-700 font-semibold">Tribunal de Justicia Administrativa</FormLabel>
-                        <FormDescription className="text-slate-600">
-                          Al activar el Tribunal de Justicia Administrativa, podrás activar o desactivar todos los sistemas.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Sistemas */}
-              <div className="md:grid md:grid-cols-2 gap-8">
-                <FormField
-                  control={form.control}
-                  name="sistema1"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 border-slate-200/50 bg-white/50 backdrop-blur-sm p-4 shadow-sm hover:border-slate-300/70 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-slate-700 font-semibold">Sistema 1</FormLabel>
-                        <FormDescription className="text-slate-600">
-                          Este sistema estará deshabilitado si la opción de Órgano Interno de Control está activada.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={areOtrosSistemasDisabled}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="sistema2"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 border-slate-200/50 bg-white/50 backdrop-blur-sm p-4 shadow-sm hover:border-slate-300/70 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-slate-700 font-semibold">Sistema 2</FormLabel>
-                        <FormDescription className="text-slate-600">
-                          Este sistema estará deshabilitado si la opción de Órgano Interno de Control está activada.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={areOtrosSistemasDisabled}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="sistema3"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 border-slate-200/50 bg-white/50 backdrop-blur-sm p-4 shadow-sm hover:border-slate-300/70 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-slate-700 font-semibold">Sistema 3</FormLabel>
-                        <FormDescription className="text-slate-600">
-                          Este sistema estará disponible si se activa el Órgano Interno de Control o el Tribunal de Justicia Administrativa.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={!isSistema3Available}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="sistema6"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border-2 border-slate-200/50 bg-white/50 backdrop-blur-sm p-4 shadow-sm hover:border-slate-300/70 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-slate-700 font-semibold">Sistema 6</FormLabel>
-                        <FormDescription className="text-slate-600">
-                          Este sistema estará deshabilitado si la opción de Órgano Interno de Control está activada.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={areOtrosSistemasDisabled}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Ubicación */}
-              <div className="md:grid md:grid-cols-1 gap-8">
-                <FormField
-                  control={form.control}
-                  name="municipio"
-                  render={({ field, fieldState }) => (
-                    <FormItem className="relative">
-                      <FormLabel>Municipio</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        value={field.value}
-                        disabled={watchAmbitoGobierno !== "Municipal"}
-                      >
+                  <FormField
+                    control={form.control}
+                    name="controlTribunal"
+                    render={({ field }) => (
+                      <FormItem className={`flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm ${
+                        field.value 
+                          ? 'border-green-300/60 bg-gradient-to-r from-green-50/80 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/15'
+                          : 'border-slate-200/50 bg-white/50 dark:bg-slate-800/50'
+                      } backdrop-blur-sm`}>
+                        <div className="space-y-0.5 flex-1 mr-3">
+                          <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">Tribunal de Justicia Administrativa</FormLabel>
+                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                            Al activar el TJA, podrás activar o desactivar todos los sistemas.
+                          </FormDescription>
+                        </div>
                         <FormControl>
-                          <SelectTrigger className={fieldState.error ? "field-error error-shake" : ""}>
-                            <SelectValue placeholder="Selecciona un municipio" />
-                          </SelectTrigger>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
                         </FormControl>
-                        <SelectContent>
-                          {MUNICIPIOS_MORELOS.map((municipio) => (
-                            <SelectItem key={municipio} value={municipio}>
-                              {municipio}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-              <div className="flex gap-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => router.push('/dashboard/entes')}
-                  disabled={submitting}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={submitting}>
-                  {submitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Actualizando...
-                    </>
-                  ) : (
-                    'Actualizar'
-                  )}
-                </Button>
+                {/* Tercera fila: Sistemas */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  <FormField
+                    control={form.control}
+                    name="sistema1"
+                    render={({ field }) => (
+                      <FormItem className={`flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm ${
+                        field.value 
+                          ? 'border-green-300/60 bg-gradient-to-r from-green-50/80 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/15'
+                          : 'border-slate-200/50 bg-white/50 dark:bg-slate-800/50'
+                      } backdrop-blur-sm`}>
+                        <div className="space-y-0.5 flex-1 mr-3">
+                          <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">Sistema 1</FormLabel>
+                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                            Deshabilitado si el OIC está activado.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={areOtrosSistemasDisabled}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="sistema2"
+                    render={({ field }) => (
+                      <FormItem className={`flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm ${
+                        field.value 
+                          ? 'border-green-300/60 bg-gradient-to-r from-green-50/80 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/15'
+                          : 'border-slate-200/50 bg-white/50 dark:bg-slate-800/50'
+                      } backdrop-blur-sm`}>
+                        <div className="space-y-0.5 flex-1 mr-3">
+                          <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">Sistema 2</FormLabel>
+                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                            Deshabilitado si el OIC está activado.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={areOtrosSistemasDisabled}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="sistema3"
+                    render={({ field }) => (
+                      <FormItem className={`flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm ${
+                        field.value 
+                          ? 'border-blue-300/60 bg-gradient-to-r from-blue-50/80 to-cyan-50/60 dark:from-blue-900/20 dark:to-cyan-900/15'
+                          : 'border-slate-200/50 bg-white/50 dark:bg-slate-800/50'
+                      } backdrop-blur-sm`}>
+                        <div className="space-y-0.5 flex-1 mr-3">
+                          <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">Sistema 3</FormLabel>
+                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                            Disponible si se activa OIC o TJA.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={!isSistema3Available}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="sistema6"
+                    render={({ field }) => (
+                      <FormItem className={`flex flex-row items-center justify-between rounded-lg border-2 p-4 shadow-sm ${
+                        field.value 
+                          ? 'border-green-300/60 bg-gradient-to-r from-green-50/80 to-emerald-50/60 dark:from-green-900/20 dark:to-emerald-900/15'
+                          : 'border-slate-200/50 bg-white/50 dark:bg-slate-800/50'
+                      } backdrop-blur-sm`}>
+                        <div className="space-y-0.5 flex-1 mr-3">
+                          <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">Sistema 6</FormLabel>
+                          <FormDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                            Deshabilitado si el OIC está activado.
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            disabled={areOtrosSistemasDisabled}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Campo de municipio */}
+                {watchAmbitoGobierno === "Municipal" && (
+                  <div className="mb-8">
+                    <FormField
+                      control={form.control}
+                      name="municipio"
+                      render={({ field, fieldState }) => (
+                        <FormItem>
+                          <FormLabel className="text-slate-700 dark:text-slate-200 font-semibold">
+                            Municipio: <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className={`bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 shadow-sm ${fieldState.error ? "field-error error-shake" : ""}`}>
+                                <SelectValue placeholder="Selecciona un municipio" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {MUNICIPIOS_MORELOS.map((municipio) => (
+                                <SelectItem key={municipio} value={municipio}>
+                                  {municipio}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+
+                {/* Botones de acción */}
+                <div className="flex justify-end pt-4 border-t border-slate-200/60 dark:border-slate-600/60 gap-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => router.push('/dashboard/entes')}
+                    disabled={submitting}
+                    className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 shadow-sm"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={submitting}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg px-8 py-2 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 active:bg-gradient-to-r active:from-blue-600 active:to-indigo-600"
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Actualizando...
+                      </>
+                    ) : (
+                      'Actualizar Ente Público'
+                    )}
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>

@@ -1,7 +1,7 @@
 {
-  "name": "Tablero Estadístico - SAEM",
-  "short_name": "Tablero SAEM",
-  "description": "Tablero de control estadístico para el Sistema Estatal Anticorrupción del Estado de Morelos",
+  "name": "Plataforma de Seguimiento, Ejecución y Evaluación del Sistema Anticorrupción del Estado de Morelos",
+  "short_name": "Plataforma SAEM",
+  "description": "Plataforma integral para el seguimiento, ejecución y evaluación del Sistema Estatal Anticorrupción del Estado de Morelos",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",

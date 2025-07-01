@@ -28,6 +28,33 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# database
+prisma/dev.db
+prisma/dev.db-journal
+
+# environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# logs
+logs
+*.log
+
+# runtime data
+pids
+*.pid
+*.seed
+
+# backup files
+*.backup
+*.bak
+
+# temporary files
+*.tmp
+*.temp
 .pnpm-debug.log*
 
 # env files

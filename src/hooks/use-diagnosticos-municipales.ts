@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { showError } from '@/lib/notifications'
 
 export interface DiagnosticoMunicipal {
@@ -31,8 +31,8 @@ export function useDiagnosticosMunicipales() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Cargar diagnósticos
-  const fetchDiagnosticos = async () => {
+  // Cargar diagnósticos - memoizada para evitar re-creaciones innecesarias
+  const fetchDiagnosticos = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/diagnosticos')
@@ -51,7 +51,7 @@ export function useDiagnosticosMunicipales() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   // Crear diagnóstico
   const createDiagnostico = async (diagnostico: Omit<DiagnosticoMunicipal, 'id'>) => {

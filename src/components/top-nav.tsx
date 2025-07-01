@@ -52,7 +52,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    title: "Tablero Estatal",
+    title: "Plataforma SAEM",
     href: "/dashboard",
     icon: LayoutDashboard,
     roles: ['INVITADO', 'OPERATIVO', 'ADMINISTRADOR', 'SEGUIMIENTO']
@@ -61,12 +61,6 @@ const navItems: NavItem[] = [
     title: "Entes Públicos", 
     href: "/dashboard/entes",
     icon: Users,
-    roles: ['OPERATIVO', 'ADMINISTRADOR']
-  },
-  {
-    title: "Directorio",
-    href: "/dashboard/directorio", 
-    icon: Notebook,
     roles: ['OPERATIVO', 'ADMINISTRADOR']
   },
   {
@@ -80,6 +74,12 @@ const navItems: NavItem[] = [
     href: "/dashboard/acuerdos",
     icon: Calendar,
     roles: ['OPERATIVO', 'ADMINISTRADOR', 'SEGUIMIENTO']
+  },
+  {
+    title: "Directorio",
+    href: "/dashboard/directorio", 
+    icon: Notebook,
+    roles: ['OPERATIVO', 'ADMINISTRADOR']
   },
   {
     title: "Usuarios",
@@ -138,7 +138,7 @@ export function TopNav() {
 
   const getFilteredItems = () => {
     if (!user) {
-      return [navItems[0]] // Solo tablero estatal
+      return [navItems[0]] // Solo plataforma SAEM
     }
     return navItems.filter(item => hasPermission(item.roles))
   }
@@ -302,13 +302,13 @@ export function TopNav() {
                       <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
                         <span>
-                          Último acceso: {new Date(user.ultimoAcceso).toLocaleDateString('es-ES', {
+                          Último acceso: {user.ultimoAcceso ? new Date(user.ultimoAcceso).toLocaleDateString('es-ES', {
                             day: '2-digit',
                             month: '2-digit',
                             year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit'
-                          })}
+                          }) : 'Sin registro'}
                         </span>
                       </div>
                     )}

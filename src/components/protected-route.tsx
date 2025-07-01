@@ -22,7 +22,9 @@ export function ProtectedRoute({
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push(redirectTo)
+      console.log('🔒 [ProtectedRoute] No user found, redirecting to:', redirectTo)
+      // Usar replace para evitar problemas con el historial
+      router.replace(redirectTo)
     }
   }, [user, isLoading, router, redirectTo])
 
@@ -61,4 +63,4 @@ export function ProtectedRoute({
   }
 
   return <>{children}</>
-}
+} 

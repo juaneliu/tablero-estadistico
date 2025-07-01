@@ -1,5 +1,13 @@
-import { useState, useEffect } from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
 import { CheckCircle, AlertCircle, XCircle, Info, X } from 'lucide-react'
+
+// Contador para generar IDs únicos de manera consistente
+let toastIdCounter = 0
+const generateToastId = (): string => {
+  return `toast-${++toastIdCounter}-${Date.now()}`
+}
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -153,7 +161,7 @@ export const useToast = () => {
   const [toasts, setToasts] = useState<Toast[]>([])
 
   const addToast = (toast: Omit<Toast, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9)
+    const id = generateToastId()
     const newToast: Toast = {
       ...toast,
       id,

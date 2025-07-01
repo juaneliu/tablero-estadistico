@@ -329,7 +329,8 @@ export function middleware(request: NextRequest) {
   
   // 4. Rate limiting para rutas de API
   if (pathname.startsWith('/api/')) {
-    if (isRateLimited(ip, pathname)) {
+    // Deshabilitar rate limiting en desarrollo
+    if (process.env.NODE_ENV !== 'development' && isRateLimited(ip, pathname)) {
       console.warn(`🚦 [Rate Limit] IP ${ip} exceeded limit for ${pathname}`)
       trackSecurityEvent(ip, `Rate limit exceeded: ${pathname}`)
       

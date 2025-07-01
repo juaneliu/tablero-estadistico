@@ -7,7 +7,7 @@ export type User = {
   email: string
   nombre: string
   apellido: string
-  rol: 'INVITADO' | 'OPERATIVO' | 'ADMINISTRADOR'
+  rol: 'INVITADO' | 'OPERATIVO' | 'SEGUIMIENTO' | 'ADMINISTRADOR'
   activo: boolean
   ultimoAcceso?: Date | null
   createdAt: Date
@@ -28,19 +28,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me')
+      console.log('🔍 [AuthContext] Checking authentication...')
+      const response = await fetch('/api/auth/me', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-cache'
+      })
       const data = await response.json()
       
+      console.log('🔍 [AuthContext] Auth response:', { success: data.success, user: data.user?.email })
+      
       if (data.success && data.user) {
+        console.log('✅ [AuthContext] User authenticated:', data.user.email)
         setUser(data.user)
       } else {
+        console.log('❌ [AuthContext] User not authenticated')
         setUser(null)
       }
     } catch (error) {
-      console.error('Error checking auth:', error)
+      console.error('❌ [AuthContext] Error checking auth:', error)
       setUser(null)
     } finally {
       setIsLoading(false)
@@ -91,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    setMounted(true)
     checkAuth()
   }, [])
 
@@ -101,6 +112,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     checkAuth,
     hasPermission,
+  }
+
+  // Evitar problemas de hidratación
+  if (!mounted) {
+    return (
+      <AuthContext.Provider value={{ ...value, isLoading: true, user: null }}>
+        {children}
+      </AuthContext.Provider>
+    )
   }
 
   return (

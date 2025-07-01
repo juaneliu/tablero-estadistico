@@ -3,11 +3,12 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { NotificationProvider } from "@/components/ui/notifications";
+import { ToastProvider } from "@/contexts/toast-context";
 
 export const metadata: Metadata = {
-  title: "Tablero Estadístico de Interconexión Nacional",
-  description: "Sistema de Cobertura del SAEM - Optimizado para rendimiento",
-  keywords: ["tablero", "estadístico", "SAEM", "Morelos", "dashboard", "analytics"],
+  title: "Plataforma de Seguimiento, Ejecución y Evaluación del Sistema Anticorrupción del Estado de Morelos",
+  description: "Plataforma integral para el seguimiento, ejecución y evaluación del SAEM - Optimizada para rendimiento",
+  keywords: ["plataforma", "seguimiento", "evaluación", "SAEM", "Morelos", "anticorrupción", "dashboard", "analytics"],
   authors: [{ name: "SAEM Morelos" }],
   creator: "SAEM Morelos",
   publisher: "SAEM Morelos",
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Tablero SAEM",
+    title: "Plataforma SAEM",
   },
   icons: {
     icon: [
@@ -33,9 +34,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_MX",
-    title: "Tablero Estadístico SAEM",
-    description: "Sistema de Control Estadístico del SAEM Morelos",
-    siteName: "Tablero SAEM",
+    title: "Plataforma de Seguimiento SAEM",
+    description: "Plataforma de Seguimiento, Ejecución y Evaluación del Sistema Anticorrupción del Estado de Morelos",
+    siteName: "Plataforma SAEM",
   },
   robots: {
     index: false,
@@ -61,11 +62,6 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        {/* AmCharts 5 Libraries */}
-        <script src="/lib/mapa/index.js" async />
-        <script src="/lib/mapa/map.js" async />
-        <script src="/lib/mapa/themes/Animated.js" async />
-        <script src="/lib/mapa/geodata/region/mexico/morLow.js" async />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -87,11 +83,88 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>
-            <NotificationProvider>
-              {children}
-            </NotificationProvider>
+            <ToastProvider>
+              <NotificationProvider>
+                {children}
+              </NotificationProvider>
+            </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
+        
+        {/* Script para cargar AmCharts de manera segura */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Cargar AmCharts de manera segura con verificaciones adicionales
+              (function() {
+                if (typeof window === 'undefined') return;
+                
+                // Verificar si ya se están cargando las librerías
+                if (window.amChartsLoading) return;
+                window.amChartsLoading = true;
+                
+                const scripts = [
+                  '/lib/mapa/index.js',
+                  '/lib/mapa/map.js',
+                  '/lib/mapa/themes/Animated.js',
+                  '/lib/mapa/geodata/region/mexico/morLow.js'
+                ];
+                
+                function loadScript(src) {
+                  return new Promise((resolve, reject) => {
+                    // Verificar si el script ya existe
+                    const existingScript = document.querySelector('script[src="' + src + '"]');
+                    if (existingScript) {
+                      resolve();
+                      return;
+                    }
+                    
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.async = true;
+                    script.setAttribute('data-amcharts', 'true');
+                    
+                    script.onload = function() {
+                      console.log('AmCharts script loaded:', src);
+                      resolve();
+                    };
+                    
+                    script.onerror = function(error) {
+                      console.warn('Failed to load AmCharts script:', src, error);
+                      resolve(); // Continuar aunque falle
+                    };
+                    
+                    document.head.appendChild(script);
+                  });
+                }
+                
+                // Cargar scripts secuencialmente con delay
+                let promise = Promise.resolve();
+                scripts.forEach((src, index) => {
+                  promise = promise.then(() => {
+                    return new Promise(resolve => {
+                      // Pequeño delay entre scripts para evitar conflictos
+                      setTimeout(() => {
+                        loadScript(src).then(resolve);
+                      }, index * 100);
+                    });
+                  });
+                });
+                
+                promise.finally(() => {
+                  window.amChartsLoading = false;
+                  window.amChartsLoaded = true;
+                  console.log('🎉 AmCharts loading completed - Librerías disponibles:', {
+                    am5: !!window.am5,
+                    am5map: !!window.am5map,
+                    am5themes_Animated: !!window.am5themes_Animated,
+                    am5geodata_region_mexico_morLow: !!window.am5geodata_region_mexico_morLow
+                  });
+                });
+              })();
+            `
+          }}
+        />
         
         {/* Script para registrar Service Worker */}
         <script

@@ -59,6 +59,8 @@ export function ProgressChart() {
     loadChartData(true)
   }
 
+  const [currentDate, setCurrentDate] = useState('')
+
   const getCurrentDate = () => {
     const now = new Date()
     return now.toLocaleDateString('es-ES', {
@@ -67,6 +69,11 @@ export function ProgressChart() {
       year: 'numeric'
     })
   }
+
+  useEffect(() => {
+    // Solo establecer la fecha después del montaje para evitar hidratación
+    setCurrentDate(getCurrentDate())
+  }, [])
 
   return (
     <Card className="col-span-4 bg-white flex flex-col h-full">
@@ -77,7 +84,7 @@ export function ProgressChart() {
               Avance del Trimestre
             </CardTitle>
             <CardDescription className="text-xs text-slate-500 tracking-wide">
-              {loading ? 'Cargando...' : `Última actualización: ${getCurrentDate()}`}
+              {loading ? 'Cargando...' : `Última actualización: ${currentDate || 'Cargando fecha...'}`}
             </CardDescription>
           </div>
           <Button

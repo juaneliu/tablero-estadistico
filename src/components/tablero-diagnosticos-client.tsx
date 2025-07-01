@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Plus, FileText, Building2, MapPin, Calendar, ExternalLink, Edit, BarChart3, Trash2, UserCheck, Clock, CheckCircle2, ChevronDown, ChevronRight, FileCheck, AlertCircle, ExternalLink as LinkIcon } from "lucide-react"
+import { Plus, FileText, Building2, MapPin, Calendar, ExternalLink, Edit, BarChart3, Trash2, UserCheck, Clock, CheckCircle2, ChevronDown, ChevronRight, FileCheck, AlertCircle, ExternalLink as LinkIcon, FileDown } from "lucide-react"
 import Link from "next/link"
 import { DiagnosticoMunicipal } from "@/hooks/use-diagnosticos-municipales"
 import { showConfirm, showSuccess, showError } from "@/lib/notifications"
@@ -162,6 +162,7 @@ export default function TableroDiagnosticosClient({
 }: TableroDiagnosticosProps) {
   const [mounted, setMounted] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [selectedMunicipio, setSelectedMunicipio] = useState('')
   const [selectedEstado, setSelectedEstado] = useState('')
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
@@ -175,8 +176,17 @@ export default function TableroDiagnosticosClient({
     setMounted(true)
   }, [])
 
-  // Función para expandir/contraer filas
-  const toggleRowExpansion = (diagnosticoId: number) => {
+  // Debounce del searchTerm para optimizar rendimiento
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
+  // Función para expandir/contraer filas - memoizada
+  const toggleRowExpansion = useCallback((diagnosticoId: number) => {
     setExpandedRows(prev => {
       const newSet = new Set(prev)
       if (newSet.has(diagnosticoId)) {
@@ -186,148 +196,233 @@ export default function TableroDiagnosticosClient({
       }
       return newSet
     })
-  }
+  }, [])
 
   // Componente para mostrar las acciones expandidas
   const AccionesExpandidas = ({ diagnostico }: { diagnostico: DiagnosticoMunicipal }) => {
     const acciones = diagnostico.acciones || []
+    const hasPDFs = diagnostico.solicitudUrl || diagnostico.respuestaUrl
     
-    if (acciones.length === 0) {
-      return (
-        <div className="bg-gray-50 p-6 border-t">
-          <div className="text-center text-gray-500">
-            <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-            <p>No hay acciones registradas para este diagnóstico</p>
-          </div>
-        </div>
-      )
-    }
-
     return (
       <div className="bg-gray-50 border-t">
         <div className="p-6">
-          <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-            <FileCheck className="h-5 w-5 mr-2 text-blue-600" />
-            Acciones del Diagnóstico ({acciones.length})
-          </h4>
-          <div className="grid gap-4">
-            {acciones.map((accion: any, index: number) => (
-              <div key={accion.id || index} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Badge 
-                        variant={accion.completada ? "default" : "secondary"}
-                        className={accion.completada ? "bg-green-100 text-green-800" : ""}
-                      >
-                        {accion.completada ? (
-                          <>
-                            <CheckCircle2 className="h-3 w-3 mr-1" />
-                            Completada
-                          </>
-                        ) : (
-                          <>
-                            <Clock className="h-3 w-3 mr-1" />
-                            Pendiente
-                          </>
-                        )}
-                      </Badge>
-                      <Badge variant="outline">
-                        {accion.descripcion || 'Sin tipo especificado'}
-                      </Badge>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      {accion.fechaLimite && (
-                        <div className="flex items-center text-gray-600">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span>Fecha límite: {new Date(accion.fechaLimite).toLocaleDateString()}</span>
+          {/* Grid de 2 columnas para PDFs y Acciones */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Sección de Documentos PDF */}
+            {hasPDFs && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
+                  <FileDown className="h-5 w-5 mr-2 text-red-600" />
+                  Documentos PDF
+                </h4>
+                <div className="space-y-3">
+                  {diagnostico.solicitudUrl && (
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                            <FileDown className="h-5 w-5 text-red-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">Solicitud</p>
+                            <p className="text-sm text-gray-600">Documento de solicitud</p>
+                          </div>
                         </div>
-                      )}
-                      
-                      {(accion.urlAccion || accion.responsable) && (
-                        <div className="flex items-center text-gray-600">
-                          <LinkIcon className="h-4 w-4 mr-2" />
-                          <a
-                            href={accion.urlAccion || accion.responsable}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
-                          >
-                            Ver documento de acción
-                          </a>
-                        </div>
-                      )}
+                        <a
+                          href={diagnostico.solicitudUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Abrir PDF
+                        </a>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
-                  <div className="ml-4">
-                    {accion.completada ? (
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  {diagnostico.respuestaUrl && (
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <FileDown className="h-5 w-5 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">Respuesta</p>
+                            <p className="text-sm text-gray-600">Documento de respuesta</p>
+                          </div>
+                        </div>
+                        <a
+                          href={diagnostico.respuestaUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:text-green-700 transition-colors"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Abrir PDF
+                        </a>
                       </div>
-                    ) : (
-                      <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <Clock className="h-5 w-5 text-yellow-600" />
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            ))}
+            )}
+
+            {/* Sección de Acciones */}
+            <div className={!hasPDFs ? "lg:col-span-2" : ""}>
+              <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
+                <FileCheck className="h-5 w-5 mr-2 text-blue-600" />
+                Acciones del Diagnóstico ({acciones.length})
+              </h4>
+              
+              {acciones.length === 0 ? (
+                <div className="bg-white p-6 rounded-lg border border-gray-200 text-center text-gray-500">
+                  <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <p>No hay acciones registradas para este diagnóstico</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {acciones.map((accion: any, index: number) => (
+                    <div key={accion.id || index} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Badge 
+                              variant={accion.completada ? "default" : "secondary"}
+                              className={accion.completada ? "bg-green-100 text-green-800" : ""}
+                            >
+                              {accion.completada ? (
+                                <>
+                                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                                  Completada
+                                </>
+                              ) : (
+                                <>
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  Pendiente
+                                </>
+                              )}
+                            </Badge>
+                            <Badge variant="outline">
+                              {accion.descripcion || 'Sin tipo especificado'}
+                            </Badge>
+                          </div>
+                          
+                          <div className="space-y-2 text-sm">
+                            {accion.fechaLimite && (
+                              <div className="flex items-center text-gray-600">
+                                <Calendar className="h-4 w-4 mr-2" />
+                                <span>Fecha límite: {new Date(accion.fechaLimite).toLocaleDateString()}</span>
+                              </div>
+                            )}
+                            
+                            {(accion.urlAccion || accion.responsable) && (
+                              <div className="flex items-center text-gray-600">
+                                <LinkIcon className="h-4 w-4 mr-2" />
+                                <a
+                                  href={accion.urlAccion || accion.responsable}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                                >
+                                  Ver documento de acción
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="ml-4">
+                          {accion.completada ? (
+                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                              <CheckCircle2 className="h-5 w-5 text-green-600" />
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                              <Clock className="h-5 w-5 text-yellow-600" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  // Solo procesar datos después del montaje para evitar hidratación
-  const filteredDiagnosticos = mounted ? diagnosticos.filter(diagnostico => {
-    const searchMatch = !searchTerm || 
-      diagnostico.municipio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      diagnostico.actividad?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      diagnostico.nombreActividad?.toLowerCase().includes(searchTerm.toLowerCase())
+  // Memoizar datos filtrados para evitar recálculos innecesarios
+  const filteredDiagnosticos = useMemo(() => {
+    if (!mounted) return []
     
-    const municipioMatch = !selectedMunicipio || diagnostico.municipio === selectedMunicipio
-    const estadoMatch = !selectedEstado || diagnostico.estado === selectedEstado
-    
-    return searchMatch && municipioMatch && estadoMatch
-  }) : []
+    return diagnosticos.filter(diagnostico => {
+      const searchMatch = !debouncedSearchTerm || 
+        diagnostico.municipio?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        diagnostico.actividad?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        diagnostico.nombreActividad?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      
+      const municipioMatch = !selectedMunicipio || diagnostico.municipio === selectedMunicipio
+      const estadoMatch = !selectedEstado || diagnostico.estado === selectedEstado
+      
+      return searchMatch && municipioMatch && estadoMatch
+    })
+  }, [mounted, diagnosticos, debouncedSearchTerm, selectedMunicipio, selectedEstado])
 
-  // Agrupar diagnósticos por municipio solo después del montaje
-  const diagnosticosPorMunicipio = mounted ? filteredDiagnosticos.reduce((acc: any, diagnostico) => {
-    const municipio = diagnostico.municipio
-    if (!acc[municipio]) {
-      acc[municipio] = {
-        municipio,
-        diagnosticos: [],
-        promedioEvaluacion: 0,
-        totalAcciones: 0,
-        accionesCompletadas: 0
+  // Memoizar agrupación por municipio
+  const diagnosticosPorMunicipio = useMemo(() => {
+    if (!mounted) return {}
+    
+    return filteredDiagnosticos.reduce((acc: any, diagnostico) => {
+      const municipio = diagnostico.municipio
+      if (!acc[municipio]) {
+        acc[municipio] = {
+          municipio,
+          diagnosticos: [],
+          promedioEvaluacion: 0,
+          totalAcciones: 0,
+          accionesCompletadas: 0
+        }
       }
-    }
-    
-    acc[municipio].diagnosticos.push(diagnostico)
-    
-    // Calcular métricas
-    const evaluaciones = acc[municipio].diagnosticos.map((d: any) => d.evaluacion || 0)
-    acc[municipio].promedioEvaluacion = evaluaciones.reduce((sum: number, val: number) => sum + val, 0) / evaluaciones.length
-    
-    acc[municipio].totalAcciones = acc[municipio].diagnosticos.reduce((sum: number, d: any) => 
-      sum + (d.acciones?.length || 0), 0)
-    acc[municipio].accionesCompletadas = acc[municipio].diagnosticos.reduce((sum: number, d: any) => 
-      sum + (d.acciones?.filter((a: any) => a.completada).length || 0), 0)
-    
-    return acc
-  }, {}) : {}
+      
+      acc[municipio].diagnosticos.push(diagnostico)
+      
+      // Calcular métricas
+      const evaluaciones = acc[municipio].diagnosticos.map((d: any) => d.evaluacion || 0)
+      acc[municipio].promedioEvaluacion = evaluaciones.reduce((sum: number, val: number) => sum + val, 0) / evaluaciones.length
+      
+      acc[municipio].totalAcciones = acc[municipio].diagnosticos.reduce((sum: number, d: any) => 
+        sum + (d.acciones?.length || 0), 0)
+      acc[municipio].accionesCompletadas = acc[municipio].diagnosticos.reduce((sum: number, d: any) => 
+        sum + (d.acciones?.filter((a: any) => a.completada).length || 0), 0)
+      
+      return acc
+    }, {})
+  }, [mounted, filteredDiagnosticos])
 
-  const gruposMunicipios = mounted ? Object.values(diagnosticosPorMunicipio)
-    .filter((grupo: any) => grupo && grupo.municipio)
-    .sort((a: any, b: any) => a.municipio.localeCompare(b.municipio)) : []
+  const gruposMunicipios = useMemo(() => {
+    if (!mounted) return []
+    
+    return Object.values(diagnosticosPorMunicipio)
+      .filter((grupo: any) => grupo && grupo.municipio)
+      .sort((a: any, b: any) => a.municipio.localeCompare(b.municipio))
+  }, [mounted, diagnosticosPorMunicipio])
 
-  // Obtener municipios únicos para el filtro solo después del montaje
-  const municipiosUnicos = mounted ? [...new Set(diagnosticos.map(d => d.municipio).filter(Boolean))].sort() : []
-  const estadosUnicos = mounted ? [...new Set(diagnosticos.map(d => d.estado).filter(Boolean))].sort() : []
+  // Memoizar municipios únicos para el filtro
+  const municipiosUnicos = useMemo(() => {
+    if (!mounted) return []
+    return [...new Set(diagnosticos.map(d => d.municipio).filter(Boolean))].sort()
+  }, [mounted, diagnosticos])
+
+  // Memoizar estados únicos para el filtro
+  const estadosUnicos = useMemo(() => {
+    if (!mounted) return []
+    return [...new Set(diagnosticos.map(d => d.estado).filter(Boolean))].sort()
+  }, [mounted, diagnosticos])
 
   if (loading) {
     return (
@@ -358,20 +453,39 @@ export default function TableroDiagnosticosClient({
     )
   }
 
-  // Mostrar contenido básico mientras no esté montado para evitar hidratación
+  // Mostrar loading mientras el componente se está montando
   if (!mounted) {
     return (
-      <div className="space-y-6" suppressHydrationWarning>
+      <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-800">
-              Tablero de Diagnósticos Municipales
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-96" />
+              </div>
+              <Skeleton className="h-10 w-32" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            {/* Filtros skeleton */}
+            <div className="flex flex-wrap gap-4 mb-6">
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+            
+            {/* Contenido skeleton */}
+            <div className="space-y-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-white rounded-lg border p-6 animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -482,7 +596,7 @@ export default function TableroDiagnosticosClient({
                       </div>
                       <div className="text-xs text-gray-500">Promedio</div>
                     </div>
-                    <Badge variant="secondary">
+                    <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-200">
                       {grupo.accionesCompletadas}/{grupo.totalAcciones} acciones
                     </Badge>
                   </div>
@@ -506,15 +620,28 @@ export default function TableroDiagnosticosClient({
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center space-x-3 mb-2">
-                                <Badge variant="outline">{diagnostico.actividad}</Badge>
                                 <Badge 
-                                  variant={diagnostico.estado === 'Completado' ? 'default' : 'secondary'}
+                                  variant="outline" 
+                                  className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
+                                >
+                                  {diagnostico.actividad}
+                                </Badge>
+                                <Badge 
+                                  className={
+                                    diagnostico.estado === 'Completado' 
+                                      ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200' 
+                                      : diagnostico.estado === 'En Proceso'
+                                      ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200'
+                                      : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200'
+                                  }
                                 >
                                   {diagnostico.estado}
                                 </Badge>
                                 {hasAcciones && (
-                                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                    {diagnostico.acciones?.length || 0} acciones
+                                  <Badge 
+                                    className="bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200"
+                                  >
+                                    {diagnostico.acciones?.length || 0} {diagnostico.acciones?.length === 1 ? 'acción' : 'acciones'}
                                   </Badge>
                                 )}
                               </div>
@@ -585,7 +712,17 @@ export default function TableroDiagnosticosClient({
         })}
       </div>
 
-      {mounted && (filteredDiagnosticos?.length === 0) && (
+      {!mounted ? (
+        <Card>
+          <CardContent className="p-8">
+            <div className="space-y-4 animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (filteredDiagnosticos?.length === 0) ? (
         <Card>
           <CardContent className="p-8 text-center">
             <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
@@ -603,7 +740,7 @@ export default function TableroDiagnosticosClient({
             </Link>
           </CardContent>
         </Card>
-      )}
+      ) : null}
     </div>
   )
 }

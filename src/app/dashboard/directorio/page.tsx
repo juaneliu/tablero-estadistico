@@ -31,17 +31,25 @@ function DirectorioPageContent() {
   const { directorios, loading, error, deleteDirectorio } = useDirectorioOIC()
   const [searchTerm, setSearchTerm] = useState("")
 
-  // Función para filtrar directorio según el término de búsqueda
+  // Función para filtrar y ordenar directorio según el término de búsqueda
   const filtrarDirectorio = (directorios: any[]) => {
-    if (!searchTerm.trim()) return directorios
+    let directoriosFiltrados = directorios
     
-    const termino = searchTerm.toLowerCase().trim()
-    return directorios.filter(directorio => 
-      directorio.oicNombre.toLowerCase().includes(termino) ||
-      directorio.nombre.toLowerCase().includes(termino) ||
-      directorio.puesto.toLowerCase().includes(termino) ||
-      directorio.correoElectronico.toLowerCase().includes(termino) ||
-      (directorio.telefono && directorio.telefono.toLowerCase().includes(termino))
+    // Aplicar filtro de búsqueda si existe término
+    if (searchTerm.trim()) {
+      const termino = searchTerm.toLowerCase().trim()
+      directoriosFiltrados = directorios.filter(directorio => 
+        directorio.oicNombre.toLowerCase().includes(termino) ||
+        directorio.nombre.toLowerCase().includes(termino) ||
+        directorio.puesto.toLowerCase().includes(termino) ||
+        directorio.correoElectronico.toLowerCase().includes(termino) ||
+        (directorio.telefono && directorio.telefono.toLowerCase().includes(termino))
+      )
+    }
+    
+    // Ordenar alfabéticamente por nombre del OIC
+    return directoriosFiltrados.sort((a, b) => 
+      a.oicNombre.localeCompare(b.oicNombre, 'es', { sensitivity: 'base' })
     )
   }
 

@@ -145,28 +145,26 @@ function EntesPageContent() {
       <ScrollArea className="h-full">
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
           {/* Header responsive */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center justify-between space-y-2">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              <h2 className="text-3xl font-bold tracking-tight">
                 Entes Públicos
               </h2>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className="text-muted-foreground">
                 Gestiona y administra los entes públicos del estado
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Link href="/dashboard/entes/importar" className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full sm:w-auto">
+            <div className="flex gap-2">
+              <Link href="/dashboard/entes/importar">
+                <Button variant="outline" className="bg-gradient-to-r from-slate-600 to-gray-600 text-white shadow-lg">
                   <Download className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Importar Datos</span>
-                  <span className="sm:hidden">Importar</span>
+                  Importar Datos
                 </Button>
               </Link>
-              <Link href="/dashboard/entes/crear" className="w-full sm:w-auto">
-                <Button className="w-full sm:w-auto">
+              <Link href="/dashboard/entes/crear">
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
                   <Plus className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Crear Ente Público</span>
-                  <span className="sm:hidden">Crear Ente</span>
+                  Crear Ente Público
                 </Button>
               </Link>
             </div>
@@ -180,19 +178,19 @@ function EntesPageContent() {
               onClick={() => setActiveView('sujetos-obligados')}
               className={`p-4 sm:p-6 rounded-xl transition-all duration-300 ${
                 activeView === 'sujetos-obligados'
-                  ? 'bg-blue-100 border-2 border-blue-300 shadow-xl'
-                  : 'bg-white border border-slate-200 shadow-md'
+                  ? 'bg-gradient-to-br from-blue-50/80 via-indigo-50/60 to-purple-50/40 dark:from-blue-900/20 dark:via-indigo-900/15 dark:to-purple-900/10 border-2 border-blue-300/60 dark:border-blue-600/60 shadow-xl backdrop-blur-sm'
+                  : 'bg-gradient-to-br from-white/70 via-slate-50/60 to-gray-50/40 dark:from-slate-800/70 dark:via-slate-700/60 dark:to-slate-600/40 border border-slate-200/60 dark:border-slate-600/60 shadow-lg backdrop-blur-sm'
               }`}
             >
               <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-2 sm:p-3 rounded-lg bg-blue-500">
+                <div className="p-2 sm:p-3 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
                   <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
                 <div className="text-left flex-1">
-                  <h3 className="font-semibold text-sm sm:text-base">
+                  <h3 className="font-semibold text-sm sm:text-base bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
                     Sujetos Obligados
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-500">
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                     {sujetosObligados.length} entes registrados
                   </p>
                 </div>
@@ -203,48 +201,44 @@ function EntesPageContent() {
               onClick={() => setActiveView('autoridades-resolutoras')}
               className={`p-4 sm:p-6 rounded-xl transition-all duration-300 ${
                 activeView === 'autoridades-resolutoras'
-                  ? 'bg-emerald-100 border-2 border-emerald-300 shadow-xl'
-                  : 'bg-white border border-slate-200 shadow-md'
+                  ? 'bg-gradient-to-br from-green-50/80 via-emerald-50/60 to-teal-50/40 dark:from-green-900/20 dark:via-emerald-900/15 dark:to-teal-900/10 border-2 border-green-300/60 dark:border-green-600/60 shadow-xl backdrop-blur-sm'
+                  : 'bg-gradient-to-br from-white/70 via-slate-50/60 to-gray-50/40 dark:from-slate-800/70 dark:via-slate-700/60 dark:to-slate-600/40 border border-slate-200/60 dark:border-slate-600/60 shadow-lg backdrop-blur-sm'
               }`}
             >
               <div className="flex items-center gap-3 sm:gap-4">
-                <div className="p-2 sm:p-3 rounded-lg bg-emerald-500">
+                <div className="p-2 sm:p-3 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
                   <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
                 <div className="text-left flex-1">
-                  <h3 className="font-semibold text-sm sm:text-base">
+                  <h3 className="font-semibold text-sm sm:text-base bg-gradient-to-r from-green-700 via-emerald-700 to-teal-700 dark:from-green-400 dark:via-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
                     Autoridades Resolutoras
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-500">
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                     {autoridadesResolutoras.length} autoridades registradas
                   </p>
                 </div>
               </div>
             </button>
           </div>
-
-          {/* Búsqueda */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-slate-50 rounded-lg">
-            <div className="flex-1 relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="text-slate-400 h-4 w-4" />
-              </div>
+          
+          {/* Bloque de búsqueda */}
+          <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-white/70 to-slate-50/70 dark:from-slate-800/70 dark:to-slate-700/70 backdrop-blur-sm rounded-lg border border-slate-200/60 dark:border-slate-600/60 shadow-lg">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
               <Input
-                type="text"
-                placeholder="Buscar por nombre, tipo, nivel, entidad..."
+                placeholder="Buscar entes por nombre, poder, ámbito, entidad o municipio..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full"
+                className="pl-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 shadow-sm"
               />
             </div>
             {searchTerm && (
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full sm:w-auto"
                 onClick={limpiarBusqueda}
+                className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 shadow-sm"
               >
-                <span className="mr-1">✕</span>
                 Limpiar
               </Button>
             )}
@@ -252,7 +246,7 @@ function EntesPageContent() {
           
           {/* Resultados de búsqueda */}
           {searchTerm && (
-            <div className="text-sm text-slate-600 px-1">
+            <div className="text-sm text-slate-600 dark:text-slate-400 px-1 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-slate-200/60 dark:border-slate-600/60">
               {sujetosObligados.length + autoridadesResolutoras.length > 0 ? (
                 <>
                   Mostrando {sujetosObligados.length + autoridadesResolutoras.length} resultado(s) para "{searchTerm}"
@@ -348,23 +342,35 @@ const TablaSujetosObligados = ({ entes, onEliminar }: { entes: any[], onEliminar
               <td className="px-4 py-4 text-center text-sm">{ente.ambitoGobierno}</td>
               <td className="px-4 py-4 text-center">
                 {ente.sistema1 ? (
-                  <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-green-100 to-emerald-100 border-2 border-green-300 rounded-full">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-red-100 to-rose-100 border-2 border-red-300 rounded-full">
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  </div>
                 )}
               </td>
               <td className="px-4 py-4 text-center">
                 {ente.sistema2 ? (
-                  <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-green-100 to-emerald-100 border-2 border-green-300 rounded-full">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-red-100 to-rose-100 border-2 border-red-300 rounded-full">
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  </div>
                 )}
               </td>
               <td className="px-4 py-4 text-center">
                 {ente.sistema6 ? (
-                  <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-green-100 to-emerald-100 border-2 border-green-300 rounded-full">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-red-100 to-rose-100 border-2 border-red-300 rounded-full">
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  </div>
                 )}
               </td>
               <td className="px-4 py-4 text-center">
@@ -421,25 +427,37 @@ const TablaSujetosObligados = ({ entes, onEliminar }: { entes: any[], onEliminar
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-medium">S1:</span>
                   {ente.sistema1 ? (
-                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-green-100 to-emerald-100 border border-green-300 rounded-full">
+                      <CheckCircle className="h-3 w-3 text-green-600" />
+                    </div>
                   ) : (
-                    <XCircle className="h-3 w-3 text-red-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-red-100 to-rose-100 border border-red-300 rounded-full">
+                      <XCircle className="h-3 w-3 text-red-600" />
+                    </div>
                   )}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-medium">S2:</span>
                   {ente.sistema2 ? (
-                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-green-100 to-emerald-100 border border-green-300 rounded-full">
+                      <CheckCircle className="h-3 w-3 text-green-600" />
+                    </div>
                   ) : (
-                    <XCircle className="h-3 w-3 text-red-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-red-100 to-rose-100 border border-red-300 rounded-full">
+                      <XCircle className="h-3 w-3 text-red-600" />
+                    </div>
                   )}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-medium">S6:</span>
                   {ente.sistema6 ? (
-                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-green-100 to-emerald-100 border border-green-300 rounded-full">
+                      <CheckCircle className="h-3 w-3 text-green-600" />
+                    </div>
                   ) : (
-                    <XCircle className="h-3 w-3 text-red-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-red-100 to-rose-100 border border-red-300 rounded-full">
+                      <XCircle className="h-3 w-3 text-red-600" />
+                    </div>
                   )}
                 </div>
               </div>
@@ -512,9 +530,13 @@ const TablaAutoridadesResolutoras = ({ entes, onEliminar }: { entes: any[], onEl
               <td className="px-4 py-4 text-center text-sm">{ente.ambitoGobierno}</td>
               <td className="px-4 py-4 text-center">
                 {ente.sistema3 ? (
-                  <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 border-2 border-blue-300 rounded-full">
+                    <CheckCircle className="h-4 w-4 text-blue-600" />
+                  </div>
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-600 mx-auto" />
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-red-100 to-rose-100 border-2 border-red-300 rounded-full">
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  </div>
                 )}
               </td>
               <td className="px-4 py-4 text-center">
@@ -571,9 +593,13 @@ const TablaAutoridadesResolutoras = ({ entes, onEliminar }: { entes: any[], onEl
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-medium">S3:</span>
                   {ente.sistema3 ? (
-                    <CheckCircle className="h-3 w-3 text-green-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-blue-100 to-indigo-100 border border-blue-300 rounded-full">
+                      <CheckCircle className="h-3 w-3 text-blue-600" />
+                    </div>
                   ) : (
-                    <XCircle className="h-3 w-3 text-red-600" />
+                    <div className="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-br from-red-100 to-rose-100 border border-red-300 rounded-full">
+                      <XCircle className="h-3 w-3 text-red-600" />
+                    </div>
                   )}
                 </div>
               </div>

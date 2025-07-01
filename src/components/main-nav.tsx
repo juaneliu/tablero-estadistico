@@ -15,7 +15,7 @@ interface NavItem {
 
 const items: NavItem[] = [
   {
-    title: "Tablero Estatal",
+    title: "Plataforma SAEM",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
@@ -54,10 +54,10 @@ export function MainNav() {
   // Filtrar elementos de navegación basado en permisos
   const getFilteredItems = () => {
     if (!user) {
-      // Usuario no autenticado - solo mostrar Tablero Estatal
+      // Usuario no autenticado - solo mostrar Plataforma SAEM
       return [
         {
-          title: "Tablero Estatal",
+          title: "Plataforma SAEM",
           href: "/dashboard",
           icon: LayoutDashboard,
         }
@@ -66,7 +66,7 @@ export function MainNav() {
     
     const allowedItems = [
       {
-        title: "Tablero Estatal",
+        title: "Plataforma SAEM",
         href: "/dashboard",
         icon: LayoutDashboard,
         roles: ['INVITADO', 'OPERATIVO', 'ADMINISTRADOR']
