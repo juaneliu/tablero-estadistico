@@ -163,39 +163,39 @@ export function DiagnosticosList() {
             diagnosticosMunicipios.map((diagnostico) => (
             <div
               key={diagnostico.id}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-3 sm:gap-4"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                 {getEstadoIcon(diagnostico.estado)}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{diagnostico.nombre}</span>
-                    <Badge variant="outline" className="text-xs">
+                <div className="space-y-1 flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <span className="font-medium truncate">{diagnostico.nombre}</span>
+                    <Badge variant="outline" className="text-xs w-fit">
                       {diagnostico.region}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                     {diagnostico.estado === 'completado' && (
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>Completado: {formatearFecha(diagnostico.fechaCompletado)}</span>
+                        <Calendar className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">Completado: {formatearFecha(diagnostico.fechaCompletado)}</span>
                       </div>
                     )}
                     {diagnostico.estado === 'en_proceso' && (
                       <div className="flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" />
+                        <TrendingUp className="h-3 w-3 flex-shrink-0" />
                         <span>Progreso: {diagnostico.progreso}%</span>
                       </div>
                     )}
                     {diagnostico.tiposDiagnostico.length > 0 && (
-                      <span>
+                      <span className="whitespace-nowrap">
                         {diagnostico.tiposDiagnostico.length} tipo{diagnostico.tiposDiagnostico.length > 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-end sm:justify-center gap-2">
                 {getEstadoBadge(diagnostico.estado)}
               </div>
             </div>

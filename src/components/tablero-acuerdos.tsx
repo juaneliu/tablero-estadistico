@@ -7,13 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { 
   Calendar,
   FileText, 
@@ -27,7 +20,6 @@ import {
   CheckCircle,
   AlertCircle,
   XCircle,
-  MoreHorizontal,
   Edit,
   Trash2,
   Plus,
@@ -41,6 +33,7 @@ import {
 } from "lucide-react"
 import { showConfirm, showSuccess, showError } from "@/lib/notifications"
 import Link from "next/link"
+import { useAuth } from "@/contexts/auth-context"
 import { useAcuerdosSeguimiento, type AcuerdoSeguimiento } from "@/hooks/use-acuerdos-seguimiento"
 import { useSeguimientos } from "@/hooks/use-seguimientos"
 import { SeguimientosList } from "@/components/seguimientos-list"
@@ -74,6 +67,7 @@ const TIPOS_SESION = [
 // Tipos de acuerdos ahora vienen del hook useAcuerdosSeguimiento
 
 export function TableroAcuerdos() {
+  const { user } = useAuth()
   const { 
     acuerdos, 
     loading, 
@@ -402,62 +396,62 @@ export function TableroAcuerdos() {
   return (
     <div className="space-y-6">
       {/* Estadísticas rápidas */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-blue-950 dark:via-blue-900 dark:to-blue-800 border-blue-200 dark:border-blue-700 shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-blue-900 dark:text-blue-100">Total Acuerdos</CardTitle>
-            <div className="p-2 bg-blue-500/20 rounded-full">
-              <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-3 md:p-4 lg:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-blue-900 dark:text-blue-100">Total Acuerdos</CardTitle>
+            <div className="p-1 sm:p-1.5 md:p-2 bg-blue-500/20 rounded-full">
+              <FileText className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 text-blue-600 dark:text-blue-400" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{totalAcuerdos}</div>
-            <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6 pt-0">
+            <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-blue-900 dark:text-blue-100">{totalAcuerdos}</div>
+            <p className="text-[9px] sm:text-xs text-blue-700 dark:text-blue-300 font-medium">
               Registrados en el sistema
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-emerald-50 via-emerald-100 to-emerald-200 dark:from-emerald-950 dark:via-emerald-900 dark:to-emerald-800 border-emerald-200 dark:border-emerald-700 shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-emerald-900 dark:text-emerald-100">Completados</CardTitle>
-            <div className="p-2 bg-emerald-500/20 rounded-full">
-              <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-3 md:p-4 lg:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-emerald-900 dark:text-emerald-100">Completados</CardTitle>
+            <div className="p-1 sm:p-1.5 md:p-2 bg-emerald-500/20 rounded-full">
+              <CheckCircle className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 text-emerald-600 dark:text-emerald-400" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{completados}</div>
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6 pt-0">
+            <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-emerald-700 dark:text-emerald-300">{completados}</div>
+            <p className="text-[9px] sm:text-xs text-emerald-600 dark:text-emerald-400 font-medium">
               {totalAcuerdos > 0 ? Math.round((completados / totalAcuerdos) * 100) : 0}% del total
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-amber-50 via-amber-100 to-amber-200 dark:from-amber-950 dark:via-amber-900 dark:to-amber-800 border-amber-200 dark:border-amber-700 shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-900 dark:text-amber-100">En Progreso</CardTitle>
-            <div className="p-2 bg-amber-500/20 rounded-full">
-              <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-3 md:p-4 lg:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-amber-900 dark:text-amber-100">En Progreso</CardTitle>
+            <div className="p-1 sm:p-1.5 md:p-2 bg-amber-500/20 rounded-full">
+              <Clock className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 text-amber-600 dark:text-amber-400" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">{enProgreso}</div>
-            <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6 pt-0">
+            <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-amber-700 dark:text-amber-300">{enProgreso}</div>
+            <p className="text-[9px] sm:text-xs text-amber-600 dark:text-amber-400 font-medium">
               {totalAcuerdos > 0 ? Math.round((enProgreso / totalAcuerdos) * 100) : 0}% del total
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-rose-50 via-rose-100 to-rose-200 dark:from-rose-950 dark:via-rose-900 dark:to-rose-800 border-rose-200 dark:border-rose-700 shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-rose-900 dark:text-rose-100">Vencidos</CardTitle>
-            <div className="p-2 bg-rose-500/20 rounded-full">
-              <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-3 md:p-4 lg:p-6">
+            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-rose-900 dark:text-rose-100">Vencidos</CardTitle>
+            <div className="p-1 sm:p-1.5 md:p-2 bg-rose-500/20 rounded-full">
+              <AlertCircle className="h-2 w-2 sm:h-3 sm:w-3 md:h-4 md:w-4 text-rose-600 dark:text-rose-400" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-rose-700 dark:text-rose-300">{vencidos}</div>
-            <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+          <CardContent className="p-2 sm:p-3 md:p-4 lg:p-6 pt-0">
+            <div className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-rose-700 dark:text-rose-300">{vencidos}</div>
+            <p className="text-[9px] sm:text-xs text-rose-600 dark:text-rose-400 font-medium">
               Requieren atención inmediata
             </p>
           </CardContent>
@@ -469,50 +463,54 @@ export function TableroAcuerdos() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-200/20 via-indigo-200/20 to-purple-200/20 dark:from-blue-800/10 dark:via-indigo-800/10 dark:to-purple-800/10 rounded-full blur-3xl -z-10"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-cyan-200/20 via-teal-200/20 to-emerald-200/20 dark:from-cyan-800/10 dark:via-teal-800/10 dark:to-emerald-800/10 rounded-full blur-2xl -z-10"></div>
         
-        <CardHeader className="relative z-10 border-b border-slate-200/60 dark:border-slate-600/60 pb-6 bg-gradient-to-r from-white/50 to-blue-50/50 dark:from-slate-800/50 dark:to-slate-700/50 backdrop-blur-sm">
-          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-            <CardTitle className="flex items-center gap-3 text-xl text-slate-800 dark:text-slate-100">
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-lg">
-                <Calendar className="h-6 w-6 text-white" />
+        <CardHeader className="relative z-10 border-b border-slate-200/60 dark:border-slate-600/60 pb-4 sm:pb-6 bg-gradient-to-r from-white/50 to-blue-50/50 dark:from-slate-800/50 dark:to-slate-700/50 backdrop-blur-sm">
+          <div className="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg md:text-xl text-slate-800 dark:text-slate-100">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-lg">
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
               </div>
               <span className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent font-bold">
                 Plataforma de Acuerdos y Seguimientos
               </span>
             </CardTitle>
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-              <Link href="/dashboard/acuerdos/crear">
-                <Button 
-                  size="sm" 
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-200/50 dark:hover:shadow-blue-800/50 text-white shadow-lg hover:shadow-xl transition-all duration-300 border-0"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nuevo Acuerdo
-                </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowExportModal(true)}
-                className="w-full sm:w-auto bg-white/70 hover:bg-blue-50/80 dark:bg-slate-800/70 dark:hover:bg-slate-700/90 hover:border-blue-300/60 dark:hover:border-blue-600/60 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 shadow-md hover:shadow-lg transition-all duration-300"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Exportar
-              </Button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              {user && user.rol !== 'INVITADO' && (
+                <>
+                  <Link href="/dashboard/acuerdos/crear" className="w-full sm:w-auto">
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 hover:shadow-blue-200/50 dark:hover:shadow-blue-800/50 text-white shadow-lg hover:shadow-xl transition-all duration-300 border-0 h-8 sm:h-9 text-xs sm:text-sm"
+                    >
+                      <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="text-xs sm:text-sm">Nuevo Acuerdo</span>
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowExportModal(true)}
+                    className="w-full sm:w-auto bg-white/70 hover:bg-blue-50/80 dark:bg-slate-800/70 dark:hover:bg-slate-700/90 hover:border-blue-300/60 dark:hover:border-blue-600/60 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 shadow-md hover:shadow-lg transition-all duration-300 h-8 sm:h-9 text-xs sm:text-sm"
+                  >
+                    <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="text-xs sm:text-sm">Exportar</span>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-6 relative z-10">
           {/* Filtros */}
-          <div className="relative overflow-hidden space-y-4 p-6 bg-gradient-to-r from-slate-50/80 via-blue-50/60 to-indigo-50/80 dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-600/80 rounded-xl border border-slate-200/60 dark:border-slate-600/60 mb-6 backdrop-blur-sm shadow-lg">
+          <div className="relative overflow-hidden space-y-3 sm:space-y-4 p-3 sm:p-4 md:p-6 bg-gradient-to-r from-slate-50/80 via-blue-50/60 to-indigo-50/80 dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-600/80 rounded-xl border border-slate-200/60 dark:border-slate-600/60 mb-4 sm:mb-6 backdrop-blur-sm shadow-lg">
             {/* Decorative background elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/30 to-purple-200/30 dark:from-blue-800/20 dark:to-purple-800/20 rounded-full blur-3xl -z-10"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-indigo-200/30 to-cyan-200/30 dark:from-indigo-800/20 dark:to-cyan-800/20 rounded-full blur-2xl -z-10"></div>
+            <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-gradient-to-br from-blue-200/30 to-purple-200/30 dark:from-blue-800/20 dark:to-purple-800/20 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute bottom-0 left-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-tr from-indigo-200/30 to-cyan-200/30 dark:from-indigo-800/20 dark:to-cyan-800/20 rounded-full blur-2xl -z-10"></div>
             
-            <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4 relative z-10">
+            <div className="flex flex-col space-y-3 sm:space-y-4 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4 relative z-10">
               {/* Campo de búsqueda */}
               <div className="flex-1 relative group">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors duration-200">
-                  <Search className="h-4 w-4 text-slate-400 group-focus-within:text-blue-500" />
+                <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none transition-colors duration-200">
+                  <Search className="h-3 w-3 sm:h-4 sm:w-4 text-slate-400 group-focus-within:text-blue-500" />
                 </div>
                 <Input
                   type="text"
@@ -522,7 +520,7 @@ export function TableroAcuerdos() {
                     setSearchTerm(e.target.value)
                     handleFilterChange()
                   }}
-                  className="pl-10 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 shadow-sm"
+                  className="pl-8 sm:pl-10 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 shadow-sm text-xs sm:text-sm h-8 sm:h-10"
                 />
               </div>
               
@@ -533,13 +531,13 @@ export function TableroAcuerdos() {
                     setFiltroEstado(value)
                     handleFilterChange()
                   }}>
-                    <SelectTrigger className="w-full sm:w-48 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 shadow-sm hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200">
+                    <SelectTrigger className="w-full sm:w-40 md:w-48 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 shadow-sm hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 h-8 sm:h-10 text-xs sm:text-sm">
                       <SelectValue placeholder="Filtrar por estado" />
                     </SelectTrigger>
                     <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-slate-200/60 dark:border-slate-600/60 shadow-xl">
-                      <SelectItem value="todos" className="focus:bg-blue-50 dark:focus:bg-blue-900/30">Todos los estados</SelectItem>
+                      <SelectItem value="todos" className="focus:bg-blue-50 dark:focus:bg-blue-900/30 text-xs sm:text-sm">Todos los estados</SelectItem>
                       {TIPOS_SEGUIMIENTO.map(estado => (
-                        <SelectItem key={estado} value={estado} className="focus:bg-blue-50 dark:focus:bg-blue-900/30">{estado}</SelectItem>
+                        <SelectItem key={estado} value={estado} className="focus:bg-blue-50 dark:focus:bg-blue-900/30 text-xs sm:text-sm">{estado}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -550,13 +548,13 @@ export function TableroAcuerdos() {
                     setFiltroPrioridad(value)
                     handleFilterChange()
                   }}>
-                    <SelectTrigger className="w-full sm:w-48 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 shadow-sm hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200">
+                    <SelectTrigger className="w-full sm:w-40 md:w-48 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 shadow-sm hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 h-8 sm:h-10 text-xs sm:text-sm">
                       <SelectValue placeholder="Filtrar por prioridad" />
                     </SelectTrigger>
                     <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-slate-200/60 dark:border-slate-600/60 shadow-xl">
-                      <SelectItem value="todos" className="focus:bg-blue-50 dark:focus:bg-blue-900/30">Todas las prioridades</SelectItem>
+                      <SelectItem value="todos" className="focus:bg-blue-50 dark:focus:bg-blue-900/30 text-xs sm:text-sm">Todas las prioridades</SelectItem>
                       {PRIORIDADES.map(prioridad => (
-                        <SelectItem key={prioridad} value={prioridad} className="focus:bg-blue-50 dark:focus:bg-blue-900/30">{prioridad}</SelectItem>
+                        <SelectItem key={prioridad} value={prioridad} className="focus:bg-blue-50 dark:focus:bg-blue-900/30 text-xs sm:text-sm">{prioridad}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -566,10 +564,11 @@ export function TableroAcuerdos() {
                   <Button 
                     variant="outline" 
                     onClick={limpiarFiltros} 
-                    className="w-full sm:w-auto bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 shadow-sm hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200"
+                    className="w-full sm:w-auto bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 shadow-sm hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 h-8 sm:h-10 text-xs sm:text-sm px-2 sm:px-3"
                   >
-                    <X className="h-4 w-4 mr-2" />
-                    Limpiar
+                    <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Limpiar</span>
+                    <span className="sm:hidden">Limpiar</span>
                   </Button>
                 )}
               </div>
@@ -600,15 +599,12 @@ export function TableroAcuerdos() {
                     <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
                       Observaciones
                     </th>
-                    <th className="h-12 px-4 text-center align-middle font-semibold text-slate-700 dark:text-slate-300">
-                      Acciones
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {totalItems === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center">
+                      <td colSpan={6} className="p-12 text-center">
                         <div className="text-center py-12">
                           <Calendar className="h-20 w-20 text-muted-foreground mx-auto mb-6" />
                           <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -633,7 +629,7 @@ export function TableroAcuerdos() {
                         <Fragment key={sessionKey}>
                           {/* Fila de encabezado del grupo */}
                           <tr className="bg-slate-100/80 dark:bg-slate-800/60 border-b border-slate-300/60 dark:border-slate-600/60">
-                            <td colSpan={7} className="p-3">
+                            <td colSpan={6} className="p-3">
                               <div className="flex items-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                                 <div className="font-semibold text-slate-800 dark:text-slate-200">
@@ -694,37 +690,6 @@ export function TableroAcuerdos() {
                                     {acuerdo.observaciones || '-'}
                                   </div>
                                 </td>
-                                <td className="p-4 align-middle text-right">
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <MoreHorizontal className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openDetails(acuerdo); }}>
-                                        <Eye className="mr-2 h-4 w-4" />
-                                        Ver detalles
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openSeguimientos(acuerdo); }}>
-                                        <MessageSquare className="mr-2 h-4 w-4" />
-                                        Seguimientos
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openEditForm(acuerdo); }}>
-                                        <Edit className="mr-2 h-4 w-4" />
-                                        Editar
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem 
-                                        onClick={(e) => { e.stopPropagation(); handleEliminarAcuerdo(acuerdo.id!, acuerdo.temaAgenda); }}
-                                        className="text-red-600"
-                                      >
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Eliminar
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </td>
                               </tr>
                             )
                           })}
@@ -735,88 +700,217 @@ export function TableroAcuerdos() {
                 </tbody>
               </table>
             </div>
+            
+            {/* Vista móvil */}
+            <div className="md:hidden">
+              {totalItems === 0 ? (
+                <div className="p-6 text-center">
+                  <div className="text-center py-8">
+                    <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      {searchTerm || filtroEstado !== "todos" || filtroPrioridad !== "todos" 
+                        ? 'No se encontraron acuerdos' 
+                        : 'No hay acuerdos registrados'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+                      {searchTerm || filtroEstado !== "todos" || filtroPrioridad !== "todos"
+                        ? 'Intenta ajustar los filtros de búsqueda.'
+                        : 'Comienza creando tu primer acuerdo de sesión.'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-200 dark:divide-slate-600">
+                  {Object.entries(paginatedGroups).map(([sessionKey, acuerdosGroup], groupIndex) => {
+                    const sessionInfo = acuerdosGroup[0]
+                    
+                    return (
+                      <div key={sessionKey} className="space-y-3">
+                        {/* Encabezado de sesión móvil */}
+                        <div className="bg-slate-100/80 dark:bg-slate-800/60 p-3 border-b border-slate-300/60 dark:border-slate-600/60">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            <div className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                              {sessionInfo.numeroSesion}
+                            </div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">
+                              - {sessionInfo.tipoSesion}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="text-xs text-slate-600 dark:text-slate-400">
+                              {formatFecha(sessionInfo.fechaSesion)}
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                              {acuerdosGroup.length} acuerdo{acuerdosGroup.length !== 1 ? 's' : ''}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Cards de acuerdos móvil */}
+                        <div className="space-y-3 p-3">
+                          {acuerdosGroup.map((acuerdo, acuerdoIndex) => {
+                            const diasInfo = diasRestantes(acuerdo.fechaCompromiso)
+                            const numeroFormateado = (acuerdoIndex + 1).toString().padStart(2, '0')
+                            
+                            return (
+                              <div 
+                                key={acuerdo.id} 
+                                className="bg-white/60 dark:bg-slate-800/60 rounded-lg border border-slate-200/60 dark:border-slate-600/60 p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                                onClick={() => openDetails(acuerdo)}
+                              >
+                                {/* Header del acuerdo */}
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-slate-400"></div>
+                                    <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                                      Acuerdo {numeroFormateado}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col gap-1">
+                                    {getEstadoBadge(acuerdo.estado)}
+                                    <div className="text-right">
+                                      {getPrioridadBadge(acuerdo.prioridad)}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Tema y descripción */}
+                                <div className="mb-3">
+                                  <h4 className="text-sm font-medium text-slate-800 dark:text-slate-200 line-clamp-2 mb-1">
+                                    {acuerdo.temaAgenda}
+                                  </h4>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                                    {acuerdo.descripcionAcuerdo}
+                                  </p>
+                                </div>
+                                
+                                {/* Responsable y área */}
+                                <div className="mb-3">
+                                  <div className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                                    {acuerdo.responsable}
+                                  </div>
+                                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                                    {acuerdo.area}
+                                  </div>
+                                </div>
+                                
+                                {/* Fecha y observaciones */}
+                                <div className="flex items-center justify-between text-xs">
+                                  <div>
+                                    <div className="text-slate-800 dark:text-slate-200 font-medium">
+                                      {formatFecha(acuerdo.fechaCompromiso)}
+                                    </div>
+                                    <div className={diasInfo.clase}>
+                                      {diasInfo.texto}
+                                    </div>
+                                  </div>
+                                  {acuerdo.observaciones && (
+                                    <div className="max-w-[100px] text-slate-600 dark:text-slate-400 truncate">
+                                      {acuerdo.observaciones}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           
           {/* Paginación */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6 p-4 bg-gradient-to-r from-slate-50/80 via-blue-50/60 to-indigo-50/80 dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-600/80 rounded-xl border border-slate-200/60 dark:border-slate-600/60 backdrop-blur-sm shadow-lg">
-            <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
-              <div className="flex items-center gap-2 text-sm text-slate-800 dark:text-slate-200 font-medium">
+          <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-slate-50/80 via-blue-50/60 to-indigo-50/80 dark:from-slate-800/80 dark:via-slate-700/60 dark:to-slate-600/80 rounded-xl border border-slate-200/60 dark:border-slate-600/60 backdrop-blur-sm shadow-lg">
+            <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium">
                 <span className="whitespace-nowrap font-semibold">Mostrar:</span>
                 <div className="relative">
                   <Select 
                     value={itemsPerPage === -1 ? "todos" : itemsPerPage.toString()} 
                     onValueChange={handleItemsPerPageChange}
                   >
-                    <SelectTrigger className="w-16 h-8 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200">
+                    <SelectTrigger className="w-14 sm:w-16 h-7 sm:h-8 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 text-xs sm:text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent 
-                      className="min-w-[64px] bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-slate-200/60 dark:border-slate-600/60 shadow-xl"
-                      style={{
-                        position: 'fixed',
-                        top: 'auto',
-                        bottom: 'calc(100% + 8px)',
-                        transform: 'none'
-                      }}
-                    >
-                      <SelectItem value="10" className="focus:bg-blue-50 dark:focus:bg-blue-900/30">10</SelectItem>
-                      <SelectItem value="20" className="focus:bg-blue-50 dark:focus:bg-blue-900/30">20</SelectItem>
-                      <SelectItem value="todos" className="focus:bg-blue-50 dark:focus:bg-blue-900/30">Todos</SelectItem>
+                    <SelectContent className="min-w-[56px] sm:min-w-[64px] bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-slate-200/60 dark:border-slate-600/60 shadow-xl">
+                      <SelectItem value="10" className="focus:bg-blue-50 dark:focus:bg-blue-900/30 text-xs sm:text-sm">10</SelectItem>
+                      <SelectItem value="20" className="focus:bg-blue-50 dark:focus:bg-blue-900/30 text-xs sm:text-sm">20</SelectItem>
+                      <SelectItem value="todos" className="focus:bg-blue-50 dark:focus:bg-blue-900/30 text-xs sm:text-sm">Todos</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               
               {itemsPerPage !== -1 && (
-                <div className="flex items-center gap-2 text-sm text-slate-800 dark:text-slate-200 font-medium">
+                <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium">
                   <span className="whitespace-nowrap font-semibold">Mostrando:</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">
                     {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalItems)}
                   </span>
-                  <span>de</span>
+                  <span className="hidden sm:inline">de</span>
+                  <span className="sm:hidden">/</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{totalItems}</span>
-                  <span>acuerdos</span>
+                  <span className="hidden sm:inline">acuerdos</span>
                 </div>
               )}
               
               {itemsPerPage === -1 && (
-                <div className="flex items-center gap-2 text-sm text-slate-800 dark:text-slate-200 font-medium">
+                <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-medium">
                   <span className="whitespace-nowrap font-semibold">Mostrando:</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">todos los {totalItems}</span>
-                  <span>acuerdos</span>
+                  <span className="hidden sm:inline">acuerdos</span>
                 </div>
               )}
             </div>
             
-            {totalPages > 1 && (
-              <div className="flex items-center gap-2 self-start sm:self-auto ml-0 sm:ml-auto mt-2 sm:mt-0 overflow-x-auto max-w-full pb-1">
+            {/* Controles de paginación */}
+            {itemsPerPage !== -1 && totalPages > 1 && (
+              <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center sm:justify-center gap-2 sm:gap-3 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 whitespace-nowrap"
+                  className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 h-7 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  Anterior
+                  <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                  <span className="hidden sm:inline">Anterior</span>
+                  <span className="sm:hidden">Ant</span>
                 </Button>
                 
-                <div className="flex items-center gap-1 flex-nowrap">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handlePageChange(page)}
-                      className={
-                        currentPage === page
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white min-w-[32px]"
-                          : "bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 min-w-[32px]"
-                      }
-                    >
-                      {page}
-                    </Button>
-                  ))}
+                <div className="flex items-center gap-1 justify-center overflow-x-auto">
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    let page
+                    if (totalPages <= 5) {
+                      page = i + 1
+                    } else if (currentPage <= 3) {
+                      page = i + 1
+                    } else if (currentPage >= totalPages - 2) {
+                      page = totalPages - 4 + i
+                    } else {
+                      page = currentPage - 2 + i
+                    }
+                    
+                    return (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(page)}
+                        className={
+                          currentPage === page
+                            ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm p-0"
+                            : "bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 w-7 h-7 sm:w-8 sm:h-8 text-xs sm:text-sm p-0"
+                        }
+                      >
+                        {page}
+                      </Button>
+                    )
+                  })}
                 </div>
                 
                 <Button
@@ -824,10 +918,11 @@ export function TableroAcuerdos() {
                   size="sm"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 whitespace-nowrap"
+                  className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/60 dark:border-slate-600/60 text-slate-700 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50/50 dark:hover:bg-slate-700/80 transition-colors duration-200 h-7 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
                 >
-                  Siguiente
-                  <ChevronRight className="h-4 w-4 ml-1" />
+                  <span className="hidden sm:inline">Siguiente</span>
+                  <span className="sm:hidden">Sig</span>
+                  <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
                 </Button>
               </div>
             )}
@@ -967,15 +1062,6 @@ export function TableroAcuerdos() {
                       </Badge>
                     )}
                   </Label>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openSeguimientos(selectedAcuerdo)}
-                    className="text-xs sm:text-sm"
-                  >
-                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                    Gestionar
-                  </Button>
                 </div>
                 
                 {selectedAcuerdo.seguimientos && selectedAcuerdo.seguimientos.length > 0 ? (
@@ -1012,20 +1098,22 @@ export function TableroAcuerdos() {
                               </div>
                             )}
                           </div>
-                          <div className="flex-shrink-0">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleDeleteSeguimiento(seguimiento.id, seguimiento.seguimiento)
-                              }}
-                              className="h-7 w-7 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                              title="Eliminar seguimiento"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+                          {user && user.rol !== 'INVITADO' && (
+                            <div className="flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDeleteSeguimiento(seguimiento.id, seguimiento.seguimiento)
+                                }}
+                                className="h-7 w-7 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                                title="Eliminar seguimiento"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -1033,38 +1121,24 @@ export function TableroAcuerdos() {
                 ) : (
                   <div className="text-center py-6">
                     <MessageSquare className="h-8 w-8 sm:h-12 sm:w-12 text-slate-400 dark:text-slate-600 mx-auto mb-2 sm:mb-3" />
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-2 sm:mb-3">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                       No hay seguimientos registrados para este acuerdo
                     </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openSeguimientos(selectedAcuerdo)}
-                      className="text-xs sm:text-sm"
-                    >
-                      <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                      Agregar primer seguimiento
-                    </Button>
                   </div>
                 )}
               </div>
 
               {/* Botones de acción fijos en la parte inferior */}
               <div className="flex flex-col sm:flex-row justify-end gap-2 pt-3 border-t border-border mt-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm -mx-4 -mb-4 px-4 pb-4 flex-shrink-0">
-                <Button 
-                  variant="outline" 
-                  onClick={closeDetails} 
-                  className="border-border text-foreground text-xs sm:text-sm order-2 sm:order-1"
-                >
-                  Cerrar
-                </Button>
-                <Button 
-                  onClick={() => openEditForm(selectedAcuerdo)}
-                  className="bg-primary text-primary-foreground text-xs sm:text-sm order-1 sm:order-2"
-                >
-                  <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                  Editar Acuerdo
-                </Button>
+                {user && user.rol !== 'INVITADO' && (
+                  <Button 
+                    onClick={() => openEditForm(selectedAcuerdo)}
+                    className="bg-primary text-primary-foreground text-xs sm:text-sm"
+                  >
+                    <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                    Editar Acuerdo
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -1318,7 +1392,7 @@ function FormularioEdicionAcuerdo({ acuerdo, onSave, onCancel }: FormularioEdici
               <SelectValue placeholder="Seleccionar prioridad" />
             </SelectTrigger>
             <SelectContent>
-              {PRIORIDADES.map(prioridad => (
+                           {PRIORIDADES.map(prioridad => (
                 <SelectItem key={prioridad} value={prioridad}>{prioridad}</SelectItem>
               ))}
             </SelectContent>

@@ -174,62 +174,67 @@ export function FormularioAcuerdo() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 max-w-5xl mx-auto">
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
+        <CardHeader className="sm:px-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
               Información del Acuerdo
             </CardTitle>
-            <Link href="/dashboard/acuerdos">
-              <Button variant="outline" size="sm">
+            <Link href="/dashboard/acuerdos" className="w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                                  Volver a la Plataforma
+                Volver a la Plataforma
               </Button>
             </Link>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
           {/* Información de la sesión */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="numeroSesion">
+              <Label htmlFor="numeroSesion" className="text-sm sm:text-base">
                 Número de Sesión <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
               <Input
                 id="numeroSesion"
-                placeholder="Ej: 001/2025"
                 value={formData.numeroSesion}
                 onChange={(e) => handleInputChange('numeroSesion', e.target.value)}
-                className={errors.numeroSesion ? 'border-red-500' : ''}
+                className={`w-full ${errors.numeroSesion ? 'field-error' : ''}`}
+                placeholder="Ej: SOE/2023/001"
               />
               {errors.numeroSesion && (
-                <p className="text-sm text-red-500">{errors.numeroSesion}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.numeroSesion}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tipoSesion">
+              <Label htmlFor="tipoSesion" className="text-sm sm:text-base">
                 Tipo de Sesión <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
-              <Select value={formData.tipoSesion} onValueChange={(value) => handleInputChange('tipoSesion', value)}>
-                <SelectTrigger className={errors.tipoSesion ? 'border-red-500' : ''}>
-                  <SelectValue placeholder="Selecciona el tipo de sesión" />
+              <Select
+                value={formData.tipoSesion}
+                onValueChange={(value) => handleInputChange('tipoSesion', value)}
+              >
+                <SelectTrigger className={`w-full ${errors.tipoSesion ? 'field-error' : ''}`}>
+                  <SelectValue placeholder="Selecciona el tipo" />
                 </SelectTrigger>
                 <SelectContent>
-                  {TIPOS_SESION.map(tipo => (
-                    <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
+                  {TIPOS_SESION.map((tipo) => (
+                    <SelectItem key={tipo} value={tipo}>
+                      {tipo}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {errors.tipoSesion && (
-                <p className="text-sm text-red-500">{errors.tipoSesion}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.tipoSesion}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fechaSesion">
+              <Label htmlFor="fechaSesion" className="text-sm sm:text-base">
                 Fecha de Sesión <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
               <Input
@@ -237,10 +242,10 @@ export function FormularioAcuerdo() {
                 type="date"
                 value={formData.fechaSesion}
                 onChange={(e) => handleInputChange('fechaSesion', e.target.value)}
-                className={errors.fechaSesion ? 'border-red-500' : ''}
+                className={`w-full ${errors.fechaSesion ? 'field-error' : ''}`}
               />
               {errors.fechaSesion && (
-                <p className="text-sm text-red-500">{errors.fechaSesion}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.fechaSesion}</p>
               )}
             </div>
           </div>
@@ -248,7 +253,7 @@ export function FormularioAcuerdo() {
           {/* Información del acuerdo */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="temaAgenda">
+              <Label htmlFor="temaAgenda" className="text-sm sm:text-base">
                 Tema de Agenda <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
               <Input
@@ -256,15 +261,15 @@ export function FormularioAcuerdo() {
                 placeholder="Ej: Implementación de Sistema de Transparencia"
                 value={formData.temaAgenda}
                 onChange={(e) => handleInputChange('temaAgenda', e.target.value)}
-                className={errors.temaAgenda ? 'border-red-500' : ''}
+                className={`w-full ${errors.temaAgenda ? 'field-error' : ''}`}
               />
               {errors.temaAgenda && (
-                <p className="text-sm text-red-500">{errors.temaAgenda}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.temaAgenda}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="descripcionAcuerdo">
+              <Label htmlFor="descripcionAcuerdo" className="text-sm sm:text-base">
                 Descripción del Acuerdo <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
               <textarea
@@ -278,15 +283,15 @@ export function FormularioAcuerdo() {
                 }`}
               />
               {errors.descripcionAcuerdo && (
-                <p className="text-sm text-red-500">{errors.descripcionAcuerdo}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.descripcionAcuerdo}</p>
               )}
             </div>
           </div>
 
           {/* Responsabilidad y seguimiento */}
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="responsable">
+              <Label htmlFor="responsable" className="text-sm sm:text-base">
                 Responsable <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
               <Input
@@ -294,15 +299,15 @@ export function FormularioAcuerdo() {
                 placeholder="Ej: Lic. María González"
                 value={formData.responsable}
                 onChange={(e) => handleInputChange('responsable', e.target.value)}
-                className={errors.responsable ? 'border-red-500' : ''}
+                className={`w-full ${errors.responsable ? 'field-error' : ''}`}
               />
               {errors.responsable && (
-                <p className="text-sm text-red-500">{errors.responsable}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.responsable}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="area">
+              <Label htmlFor="area" className="text-sm sm:text-base">
                 Área <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
               <Input
@@ -310,18 +315,18 @@ export function FormularioAcuerdo() {
                 placeholder="Ej: Dirección de Tecnologías"
                 value={formData.area}
                 onChange={(e) => handleInputChange('area', e.target.value)}
-                className={errors.area ? 'border-red-500' : ''}
+                className={`w-full ${errors.area ? 'field-error' : ''}`}
               />
               {errors.area && (
-                <p className="text-sm text-red-500">{errors.area}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.area}</p>
               )}
             </div>
           </div>
 
           {/* Estado y prioridad */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="fechaCompromiso">
+              <Label htmlFor="fechaCompromiso" className="text-sm sm:text-base">
                 Fecha de Compromiso <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
               <Input
@@ -329,19 +334,22 @@ export function FormularioAcuerdo() {
                 type="date"
                 value={formData.fechaCompromiso}
                 onChange={(e) => handleInputChange('fechaCompromiso', e.target.value)}
-                className={errors.fechaCompromiso ? 'border-red-500' : ''}
+                className={`w-full ${errors.fechaCompromiso ? 'field-error' : ''}`}
               />
               {errors.fechaCompromiso && (
-                <p className="text-sm text-red-500">{errors.fechaCompromiso}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.fechaCompromiso}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="prioridad">
+              <Label htmlFor="prioridad" className="text-sm sm:text-base">
                 Prioridad <span className="text-red-500 font-bold text-lg ml-1">*</span>
               </Label>
-              <Select value={formData.prioridad} onValueChange={(value) => handleInputChange('prioridad', value)}>
-                <SelectTrigger className={errors.prioridad ? 'border-red-500' : ''}>
+              <Select
+                value={formData.prioridad}
+                onValueChange={(value) => handleInputChange('prioridad', value)}
+              >
+                <SelectTrigger className={`w-full ${errors.prioridad ? 'field-error' : ''}`}>
                   <SelectValue placeholder="Selecciona la prioridad" />
                 </SelectTrigger>
                 <SelectContent>
@@ -351,14 +359,17 @@ export function FormularioAcuerdo() {
                 </SelectContent>
               </Select>
               {errors.prioridad && (
-                <p className="text-sm text-red-500">{errors.prioridad}</p>
+                <p className="text-xs text-red-500 mt-1">{errors.prioridad}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="estado">Estado Inicial</Label>
-              <Select value={formData.estado} onValueChange={(value) => handleInputChange('estado', value)}>
-                <SelectTrigger>
+              <Label htmlFor="estado" className="text-sm sm:text-base">Estado Inicial</Label>
+              <Select
+                value={formData.estado}
+                onValueChange={(value) => handleInputChange('estado', value)}
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona el estado" />
                 </SelectTrigger>
                 <SelectContent>
@@ -372,7 +383,7 @@ export function FormularioAcuerdo() {
 
           {/* Observaciones */}
           <div className="space-y-2">
-            <Label htmlFor="observaciones">Observaciones</Label>
+            <Label htmlFor="observaciones" className="text-sm sm:text-base">Observaciones</Label>
             <textarea
               id="observaciones"
               rows={3}

@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from 'recharts'
-import { RefreshCw } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts'
 import { useEntes } from '@/hooks/use-entes'
 
 export function ProgressChart() {
@@ -16,15 +14,10 @@ export function ProgressChart() {
     { name: 'S6', percentage: 0, color: '#42A5CC' }
   ])
   const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
 
-  const loadChartData = async (isRefresh = false) => {
+  const loadChartData = async () => {
     try {
-      if (isRefresh) {
-        setRefreshing(true)
-      } else {
-        setLoading(true)
-      }
+      setLoading(true)
       
       const stats = await getSystemStatistics()
       
@@ -40,7 +33,6 @@ export function ProgressChart() {
       console.error('Error loading chart data:', error)
     } finally {
       setLoading(false)
-      setRefreshing(false)
     }
   }
   
@@ -49,15 +41,11 @@ export function ProgressChart() {
     
     // Auto-refresh cada 5 minutos
     const interval = setInterval(() => {
-      loadChartData(true)
+      loadChartData()
     }, 5 * 60 * 1000)
     
     return () => clearInterval(interval)
   }, [getSystemStatistics])
-
-  const handleRefresh = () => {
-    loadChartData(true)
-  }
 
   const [currentDate, setCurrentDate] = useState('')
 
@@ -76,40 +64,36 @@ export function ProgressChart() {
   }, [])
 
   return (
-    <Card className="col-span-4 bg-white flex flex-col h-full">
-      <CardHeader className="pb-4 flex-shrink-0">
+    <Card className="col-span-4 bg-white flex flex-col min-h-[300px] sm:min-h-[400px]">
+      <CardHeader className="pb-2 sm:pb-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold text-slate-900 tracking-wide">
+            <CardTitle className="text-base sm:text-lg font-semibold text-slate-900 tracking-wide">
               Avance del Trimestre
             </CardTitle>
-            <CardDescription className="text-xs text-slate-500 tracking-wide">
+            <CardDescription className="text-[10px] sm:text-xs text-slate-500 tracking-wide">
               {loading ? 'Cargando...' : `Última actualización: ${currentDate || 'Cargando fecha...'}`}
             </CardDescription>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="ml-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </Button>
         </div>
       </CardHeader>
-      <CardContent className="pl-2 flex-1 flex flex-col">
+      <CardContent className="pl-0 sm:pl-2 flex-1 flex flex-col">
         {loading ? (
           <div className="flex items-center justify-center flex-1">
             <div className="text-center">
-              <div className="text-6xl opacity-50 mb-4">📊</div>
-              <p className="text-muted-foreground">Cargando datos de la gráfica...</p>
+              <div className="text-4xl sm:text-6xl opacity-50 mb-2 sm:mb-4">📊</div>
+              <p className="text-sm text-muted-foreground">Cargando datos de la gráfica...</p>
             </div>
           </div>
         ) : (
           <div className="flex-1">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <BarChart data={chartData} margin={{ 
+                top: 20, 
+                right: 10, 
+                left: 10, 
+                bottom: 5 
+              }}>
                 <CartesianGrid 
                   strokeDasharray="1 1" 
                   stroke="#e2e8f0" 
@@ -117,16 +101,18 @@ export function ProgressChart() {
                 />
                 <XAxis 
                   dataKey="name" 
-                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  tick={{ fontSize: 10, fill: '#64748b' }}
                   axisLine={{ stroke: '#cbd5e1' }}
-                  tickLine={{ stroke: '#cbd5e1' }}
                 />
-                <YAxis 
-                  tick={{ fontSize: 11, fill: '#64748b' }}
+                <YAxis
+                  tick={{ fontSize: 10, fill: '#64748b' }}
                   axisLine={{ stroke: '#cbd5e1' }}
-                  tickLine={{ stroke: '#cbd5e1' }}
                   domain={[0, 100]}
                   tickFormatter={(value) => `${value.toFixed(0)}%`}
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`${Number(value).toFixed(2)}%`, 'Porcentaje']}
+                  labelFormatter={(label) => `Sistema ${label}`}
                 />
                 <Bar 
                   dataKey="percentage" 

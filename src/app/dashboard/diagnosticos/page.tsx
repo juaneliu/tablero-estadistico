@@ -36,6 +36,7 @@ import {
 } from "lucide-react"
 import { showError, showSuccess, showConfirm } from "@/lib/notifications"
 import { useDiagnosticosMunicipales } from "@/hooks/use-diagnosticos-municipales"
+import { useAuth } from "@/contexts/auth-context"
 import { useMetricasDiagnosticosMapa } from "@/hooks/use-metricas-diagnosticos-mapa"
 import { useInformes } from "@/hooks/use-informes"
 import { MapaMorelos } from "@/components/mapa-morelos"
@@ -46,6 +47,7 @@ import {
 } from "@/lib/informes-service"
 
 function DiagnosticosMunicipiosContent() {
+  const { user } = useAuth()
   const { 
     diagnosticos, 
     loading, 
@@ -53,6 +55,9 @@ function DiagnosticosMunicipiosContent() {
     estadisticas, 
     fetchDiagnosticos 
   } = useDiagnosticosMunicipales()
+  
+  // Verificar si el usuario puede editar
+  const canEdit = user?.rol !== 'INVITADO'
   
   // Hook para obtener métricas del mapa (para promedio general unificado)
   const { metricasMunicipios: metricasMapa } = useMetricasDiagnosticosMapa()
@@ -413,43 +418,45 @@ function DiagnosticosMunicipiosContent() {
                 )}
               </button>
 
-              <button
-                onClick={() => changeView('informes')}
-                className={`group relative p-6 rounded-xl transition-all duration-300 ${
-                  activeView === 'informes'
-                    ? 'bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200 dark:from-purple-950 dark:via-purple-900 dark:to-purple-800 border-2 border-purple-300 dark:border-purple-600 shadow-xl'
-                    : 'bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200/60 dark:border-slate-600/60 shadow-md hover:shadow-lg'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-lg shadow-lg transition-all duration-300 ${
+              {canEdit && (
+                <button
+                  onClick={() => changeView('informes')}
+                  className={`group relative p-6 rounded-xl transition-all duration-300 ${
                     activeView === 'informes'
-                      ? 'bg-gradient-to-br from-purple-500 to-violet-600'
-                      : 'bg-gradient-to-br from-slate-400 to-slate-500 group-hover:from-purple-400 group-hover:to-purple-500'
-                  }`}>
-                    <Download className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className={`font-semibold transition-colors duration-300 ${
+                      ? 'bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200 dark:from-purple-950 dark:via-purple-900 dark:to-purple-800 border-2 border-purple-300 dark:border-purple-600 shadow-xl'
+                      : 'bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-slate-200/60 dark:border-slate-600/60 shadow-md hover:shadow-lg'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-lg shadow-lg transition-all duration-300 ${
                       activeView === 'informes'
-                        ? 'text-purple-800 dark:text-purple-200'
-                        : 'text-slate-700 dark:text-slate-300 group-hover:text-purple-600 dark:group-hover:text-purple-400'
+                        ? 'bg-gradient-to-br from-purple-500 to-violet-600'
+                        : 'bg-gradient-to-br from-slate-400 to-slate-500 group-hover:from-purple-400 group-hover:to-purple-500'
                     }`}>
-                      Informes
-                    </h3>
-                    <p className={`text-sm transition-colors duration-300 ${
-                      activeView === 'informes'
-                        ? 'text-purple-600 dark:text-purple-400'
-                        : 'text-slate-500 dark:text-slate-400'
-                    }`}>
-                      Reportes y exportaciones
-                    </p>
+                      <Download className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className={`font-semibold transition-colors duration-300 ${
+                        activeView === 'informes'
+                          ? 'text-purple-800 dark:text-purple-200'
+                          : 'text-slate-700 dark:text-slate-300 group-hover:text-purple-600 dark:group-hover:text-purple-400'
+                      }`}>
+                        Informes
+                      </h3>
+                      <p className={`text-sm transition-colors duration-300 ${
+                        activeView === 'informes'
+                          ? 'text-purple-600 dark:text-purple-400'
+                          : 'text-slate-500 dark:text-slate-400'
+                      }`}>
+                        Reportes y exportaciones
+                      </p>
+                    </div>
                   </div>
-                </div>
-                {activeView === 'informes' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-violet-600 rounded-b-xl"></div>
-                )}
-              </button>
+                  {activeView === 'informes' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-violet-600 rounded-b-xl"></div>
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Contenido dinámico */}
@@ -457,9 +464,10 @@ function DiagnosticosMunicipiosContent() {
               {activeView === 'resumen' && (
                 <div className="space-y-4">
                   {/* Gráficos de estadísticas - usando estilos de Acuerdos con gradientes y efectos */}
-              <div className="grid gap-4 md:grid-cols-2">
-                {/* Gráfico circular de progreso */}
-                <Card className="bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 border-slate-200/60 dark:border-slate-600/60 shadow-xl backdrop-blur-sm overflow-hidden">
+              {canEdit && (
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Gráfico circular de progreso */}
+                  <Card className="bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 border-slate-200/60 dark:border-slate-600/60 shadow-xl backdrop-blur-sm overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/20 via-indigo-200/20 to-purple-200/20 dark:from-blue-800/10 dark:via-indigo-800/10 dark:to-purple-800/10 rounded-full blur-3xl -z-10"></div>
                   <CardHeader className="relative z-10 pb-2">
                     <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100 text-base">
@@ -587,7 +595,8 @@ function DiagnosticosMunicipiosContent() {
                     )}
                   </CardContent>
                 </Card>
-              </div>
+                </div>
+              )}
 
               {/* Mapa de Morelos - Promedio por Municipio */}
               <MapaMorelos />

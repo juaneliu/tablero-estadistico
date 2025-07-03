@@ -5,12 +5,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { useEntes } from '@/hooks/use-entes'
 
-const COLORS = ['#F29888', '#B25FAC', '#9085DA', '#42A5CC', '#F29888']
+const COLORS = ['#F29888', '#B25FAC', '#9085DA', '#42A5CC', '#3B82F6']
 
 // Mapeo de colores por ámbito
 const AMBITO_COLORS = {
   'Estatal': '#F29888',
   'Municipal': '#B25FAC'
+}
+
+// Custom Label para el gráfico de pie que funciona con SSR
+const CustomPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }: any) => {
+  const RADIAN = Math.PI / 180
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+  const x = cx + radius * Math.cos(-midAngle * RADIAN)
+  const y = cy + radius * Math.sin(-midAngle * RADIAN)
+
+  return (
+    <text 
+      x={x} 
+      y={y} 
+      fill="white" 
+      textAnchor={x > cx ? 'start' : 'end'} 
+      dominantBaseline="central"
+      fontSize="12"
+      fontWeight="500"
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  )
 }
 
 export function EstadisticasEntes() {
@@ -45,14 +67,14 @@ export function EstadisticasEntes() {
 
   if (loading) {
     return (
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i} className="bg-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Cargando...</CardTitle>
+      <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i} className="bg-white shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-4 md:p-6">
+              <CardTitle className="text-xs sm:text-sm font-medium">Cargando...</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold">-</div>
+            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+              <div className="text-base sm:text-xl md:text-2xl font-bold animate-pulse bg-gray-200 h-6 w-12 rounded"></div>
             </CardContent>
           </Card>
         ))}
@@ -71,73 +93,74 @@ export function EstadisticasEntes() {
   }))
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-3 sm:space-y-4 md:space-y-6">
       {/* Estadísticas principales responsive */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Entes</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Total de Entes</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            <div className="text-base sm:text-xl md:text-2xl font-bold">{stats.total}</div>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
               Sujetos obligados registrados
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
               <div 
-                className="w-3 h-3 rounded-full flex-shrink-0" 
+                className="w-2 h-2 sm:w-3 sm:h-3 rounded-full flex-shrink-0" 
                 style={{ backgroundColor: AMBITO_COLORS['Estatal'] }}
               ></div>
               <span className="truncate">Entes Estatales</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-xl sm:text-2xl font-bold" style={{ color: AMBITO_COLORS['Estatal'] }}>
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            <div className="text-base sm:text-xl md:text-2xl font-bold" style={{ color: AMBITO_COLORS['Estatal'] }}>
               {stats.porAmbito['Estatal'] || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Ámbito estatal
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
+              Dependencias del gobierno estatal
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-white shadow-sm hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
               <div 
-                className="w-3 h-3 rounded-full flex-shrink-0" 
+                className="w-2 h-2 sm:w-3 sm:h-3 rounded-full flex-shrink-0" 
                 style={{ backgroundColor: AMBITO_COLORS['Municipal'] }}
               ></div>
               <span className="truncate">Entes Municipales</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-xl sm:text-2xl font-bold" style={{ color: AMBITO_COLORS['Municipal'] }}>
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            <div className="text-base sm:text-xl md:text-2xl font-bold" style={{ color: AMBITO_COLORS['Municipal'] }}>
               {stats.porAmbito['Municipal'] || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Ámbito municipal
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
+              Ayuntamientos del estado
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Gráficos responsive */}
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
-        <Card className="flex flex-col bg-white shadow-sm">
-          <CardHeader className="flex-shrink-0">
-            <CardTitle className="text-base sm:text-lg">Distribución por Ámbito</CardTitle>
-            <CardDescription className="text-sm">
+      <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 xl:grid-cols-2">
+        {/* Gráfico de distribución por ámbito */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Distribución por Ámbito</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               Distribución de sujetos obligados por ámbito de gobierno
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 flex items-center justify-center p-2 sm:p-6">
-            <div className="w-full h-[250px] sm:h-[300px] lg:h-[350px]">
+          <CardContent className="p-2 sm:p-4 md:p-6 pt-0">
+            <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -145,76 +168,82 @@ export function EstadisticasEntes() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => 
-                      window.innerWidth < 640 
-                        ? `${(percent * 100).toFixed(0)}%` 
-                        : `${name} ${(percent * 100).toFixed(0)}%`
-                    }
-                    outerRadius={window.innerWidth < 640 ? "70%" : "80%"}
+                    label={CustomPieLabel}
+                    outerRadius="70%"
                     fill="#8884d8"
                     dataKey="value"
                   >
                     {ambitoData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={Object.values(AMBITO_COLORS)[index] || COLORS[index % COLORS.length]} 
+                      />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    formatter={(value, name) => [value, 'Cantidad']}
+                    labelFormatter={(label) => `Ámbito ${label}`}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+            </div>
+            
+            {/* Leyenda para el gráfico de ámbito */}
+            <div className="mt-3 sm:mt-4 flex flex-wrap justify-center gap-2 sm:gap-4">
+              {ambitoData.map((entry, index) => (
+                <div key={entry.name} className="flex items-center gap-1 sm:gap-2">
+                  <div 
+                    className="w-2 h-2 sm:w-3 sm:h-3 rounded-full" 
+                    style={{ backgroundColor: Object.values(AMBITO_COLORS)[index] || COLORS[index % COLORS.length] }}
+                  ></div>
+                  <span className="text-xs sm:text-sm">{entry.name}: {entry.value}</span>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="flex flex-col bg-white shadow-sm">
-          <CardHeader className="flex-shrink-0">
-            <CardTitle className="text-base sm:text-lg">Distribución por Poder</CardTitle>
-            <CardDescription className="text-sm">
+        {/* Gráfico de distribución por poder */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Distribución por Poder</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               Distribución de sujetos obligados por poder de gobierno
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 flex items-center justify-center p-2 sm:p-6">
-            <div className="w-full h-[250px] sm:h-[300px] lg:h-[350px]">
+          <CardContent className="p-2 sm:p-4 md:p-6 pt-0">
+            <div className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={poderData} margin={{ top: 20, right: 10, left: 10, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <BarChart 
+                  data={poderData} 
+                  margin={{ 
+                    top: 10, 
+                    right: 10, 
+                    left: 10, 
+                    bottom: 40 
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis 
                     dataKey="name" 
-                    fontSize={window.innerWidth < 640 ? 10 : 12}
-                    angle={window.innerWidth < 640 ? -45 : 0}
-                    textAnchor={window.innerWidth < 640 ? "end" : "middle"}
-                    height={window.innerWidth < 640 ? 60 : 40}
+                    fontSize={10}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    interval={0}
                   />
-                  <YAxis fontSize={window.innerWidth < 640 ? 10 : 12} />
-                  <Tooltip />
-                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  <YAxis fontSize={10} />
+                  <Tooltip 
+                    formatter={(value, name) => [value, 'Cantidad']}
+                    labelFormatter={(label) => `Poder ${label}`}
+                  />
+                  <Bar dataKey="value" radius={[2, 2, 0, 0]}>
                     {poderData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Leyenda para móviles en gráfico de ámbito */}
-      <div className="block sm:hidden">
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-sm">Leyenda</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-4">
-              {ambitoData.map((entry, index) => (
-                <div key={entry.name} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  ></div>
-                  <span className="text-sm">{entry.name}: {entry.value}</span>
-                </div>
-              ))}
             </div>
           </CardContent>
         </Card>

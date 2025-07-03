@@ -11,6 +11,7 @@ import { showError, showSuccess, showConfirm, showUrlValidationError, showLoadin
 import { MUNICIPIOS_MORELOS } from "@/lib/prisma-service"
 import { cn } from "@/lib/utils"
 import { useDiagnosticosMunicipales } from "@/hooks/use-diagnosticos-municipales"
+import { ProtectedRoute } from "@/components/protected-route"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -425,28 +426,31 @@ Esta acción NO se puede deshacer.`,
 
   if (isLoading) {
     return (
-      <main className="w-full">
-        <ScrollArea className="h-full">
-          <div className="flex-1 space-y-4 p-5">
-            <div className="space-y-4">
-              <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+      <ProtectedRoute allowedRoles={['OPERATIVO', 'ADMINISTRADOR', 'SEGUIMIENTO']}>
+        <main className="w-full">
+          <ScrollArea className="h-full">
+            <div className="flex-1 space-y-4 p-5">
+              <div className="space-y-4">
+                <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+              </div>
             </div>
-          </div>
-        </ScrollArea>
-      </main>
+          </ScrollArea>
+        </main>
+      </ProtectedRoute>
     )
   }
 
   return (
-    <main className="w-full">
-      <ScrollArea className="h-full">
-        <div className="flex-1 space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-8 pt-4 sm:pt-6">
-          {/* Breadcrumb */}
-          <div className="flex items-center space-x-2 text-sm text-slate-600">
-            <Link 
-              href="/dashboard" 
+    <ProtectedRoute allowedRoles={['OPERATIVO', 'ADMINISTRADOR', 'SEGUIMIENTO']}>
+      <main className="w-full">
+        <ScrollArea className="h-full">
+          <div className="flex-1 space-y-4 sm:space-y-6 p-3 sm:p-4 md:p-8 pt-4 sm:pt-6">
+            {/* Breadcrumb */}
+            <div className="flex items-center space-x-2 text-sm text-slate-600">
+              <Link 
+                href="/dashboard" 
               className="hover:text-slate-800 transition-colors duration-200"
             >
               Dashboard
@@ -878,5 +882,6 @@ Esta acción NO se puede deshacer.`,
         </div>
       </ScrollArea>
     </main>
+    </ProtectedRoute>
   )
 }

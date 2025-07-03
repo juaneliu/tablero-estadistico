@@ -86,83 +86,83 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="relative z-10 flex-1 flex">
-          {/* Panel izquierdo - Contenido principal (70%) */}
-          <div className="w-[70%] flex flex-col justify-center p-8 lg:p-16 xl:p-20">
-            <div className="max-w-4xl">
+        <div className="relative z-10 flex-1 flex flex-col lg:flex-row">
+          {/* Panel izquierdo - Contenido principal */}
+          <div className="w-full lg:w-[70%] flex flex-col justify-center p-4 sm:p-6 md:p-8 lg:p-16 xl:p-20">
+            <div className="max-w-4xl mx-auto lg:mx-0">
               {/* Branding - Imagotipo horizontal */}
-              <div className="mb-12">
+              <div className="mb-6 sm:mb-8 md:mb-12 text-center lg:text-left">
                 <Image
                   src="/img/imagotipo-horizontal-envolvente.png"
                   alt="Sistema Anticorrupción del Estado de Morelos"
                   width={400}
                   height={120}
-                  className="object-contain drop-shadow-lg filter"
+                  className="object-contain drop-shadow-lg filter mx-auto lg:mx-0 max-w-[280px] sm:max-w-[320px] md:max-w-[400px]"
                 />
               </div>
 
               {/* Título principal */}
-              <div className="mb-12">
-                <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 dark:text-slate-100 mb-6 leading-tight">
+              <div className="mb-6 sm:mb-8 md:mb-12 text-center lg:text-left">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4 md:mb-6 leading-tight">
                   Plataforma de<br />
                   <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     Seguimiento y Control
                   </span>
                 </h1>
-                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
+                <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Herramienta pública para medir avances, asegurar cumplimiento y fortalecer la transparencia en el estado de Morelos.
                 </p>
               </div>
 
               {/* Métricas destacadas */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                      <Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-12">
+                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-1.5 sm:p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <Building2 className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">154+</div>
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">154+</div>
                   </div>
-                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">Entes Públicos</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Bajo seguimiento</div>
+                  <div className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Entes Públicos</div>
+                  <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Bajo seguimiento</div>
                 </div>
 
-                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                      <BarChart3 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-1.5 sm:p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-indigo-600 dark:text-indigo-400" />
                     </div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">36</div>
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">36</div>
                   </div>
-                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">Municipios</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Conectados</div>
+                  <div className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Municipios</div>
+                  <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Conectados</div>
                 </div>
 
-                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                      <Monitor className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-1.5 sm:p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                      <Monitor className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">24/7</div>
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">24/7</div>
                   </div>
-                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">Monitoreo</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Tiempo real</div>
+                  <div className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Monitoreo</div>
+                  <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Tiempo real</div>
                 </div>
 
-                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                      <Target className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                    <div className="p-1.5 sm:p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                      <Target className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">100%</div>
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">100%</div>
                   </div>
-                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">Seguimiento</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Efectividad</div>
+                  <div className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Seguimiento</div>
+                  <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Efectividad</div>
                 </div>
               </div>
 
               {/* Funcionalidades principales - Todas en una fila */}
-              <div className="space-y-3">
+              <div className="space-y-3 hidden lg:block">
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Funcionalidades principales</h3>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
@@ -200,31 +200,31 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Panel derecho - Formulario de login (30%) */}
-          <div className="w-[30%] flex items-center justify-center p-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-xl border-l border-slate-200/30 dark:border-slate-700/30">
+          {/* Panel derecho - Formulario de login */}
+          <div className="w-full lg:w-[30%] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-white/50 dark:bg-slate-800/50 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-slate-200/30 dark:border-slate-700/30">
             <div className="w-full max-w-sm">
-              <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-2xl rounded-3xl">
-                <CardHeader className="text-center p-6 pb-4">
-                  <div className="flex justify-center mb-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-purple-500/10 rounded-2xl border border-blue-200/20 dark:border-blue-700/20">
+              <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-2xl rounded-2xl sm:rounded-3xl">
+                <CardHeader className="text-center p-4 sm:p-6 pb-3 sm:pb-4">
+                  <div className="flex justify-center mb-3 sm:mb-4">
+                    <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-purple-500/10 rounded-xl sm:rounded-2xl border border-blue-200/20 dark:border-blue-700/20">
                       <Image
                         src="/img/variante-saem-efecto.png"
                         alt="Logo SAEM Efecto"
-                        width={40}
-                        height={40}
-                        className="object-contain"
+                        width={32}
+                        height={32}
+                        className="object-contain sm:w-10 sm:h-10"
                       />
                     </div>
                   </div>
-                  <CardTitle className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                  <CardTitle className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                     Acceso Seguro
                   </CardTitle>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                     Ingresa tus credenciales para continuar
                   </p>
                 </CardHeader>
                 
-                <CardContent className="p-6 pt-0">
+                <CardContent className="p-4 sm:p-6 pt-0">
                   {message && (
                     <div className={`p-3 rounded-xl mb-4 flex items-center gap-2 ${
                       message.type === 'success' 
@@ -313,7 +313,7 @@ export default function LoginPage() {
                     </Button>
                   </form>
 
-                  <div className="text-center mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <div className="text-center mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-700">
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       Sistema Anticorrupción del Estado de Morelos
                     </p>
@@ -325,9 +325,9 @@ export default function LoginPage() {
         </div>
 
         {/* Pie de página con copyright */}
-        <footer className="relative z-10 py-6 px-8 border-t border-slate-200/30 dark:border-slate-700/30 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm">
+        <footer className="relative z-10 py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:px-8 border-t border-slate-200/30 dark:border-slate-700/30 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm">
           <div className="text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               © 2025 Unidad de Servicios Tecnológicos - SAEM. Todos los derechos reservados.
             </p>
           </div>

@@ -11,6 +11,7 @@ import { showError, showSuccess, showMissingFieldsError, showUrlValidationError,
 import { MUNICIPIOS_MORELOS } from "@/lib/prisma-service"
 import { useDiagnosticosMunicipales } from "@/hooks/use-diagnosticos-municipales"
 import { cn } from "@/lib/utils"
+import { ProtectedRoute } from "@/components/protected-route"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -310,29 +311,30 @@ export default function CrearDiagnosticoPage() {
   }
 
   return (
-    <main className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700">
-      <div className="container mx-auto p-4 md:p-8 pt-6">
-        <div className="space-y-6">
-          {/* Breadcrumb */}
-          <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-300">
-            <Link 
-              href="/dashboard" 
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-            >
-              Dashboard
-            </Link>
-            <ChevronRight className="h-4 w-4" />
-            <Link 
-              href="/dashboard/diagnosticos" 
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-            >
-              Diagnósticos Municipios
-            </Link>
-            <ChevronRight className="h-4 w-4" />
-            <span className="font-medium text-blue-600 dark:text-blue-400">
-              Crear
-            </span>
-          </div>
+    <ProtectedRoute allowedRoles={['OPERATIVO', 'ADMINISTRADOR', 'SEGUIMIENTO']}>
+      <main className="w-full min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700">
+        <div className="container mx-auto p-4 md:p-8 pt-6">
+          <div className="space-y-6">
+            {/* Breadcrumb */}
+            <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-300">
+              <Link 
+                href="/dashboard" 
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+              >
+                Dashboard
+              </Link>
+              <ChevronRight className="h-4 w-4" />
+              <Link 
+                href="/dashboard/diagnosticos" 
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+              >
+                Diagnósticos Municipios
+              </Link>
+              <ChevronRight className="h-4 w-4" />
+              <span className="font-medium text-blue-600 dark:text-blue-400">
+                Crear
+              </span>
+            </div>
 
           {/* Header */}
           <div className="space-y-2">
@@ -802,5 +804,6 @@ export default function CrearDiagnosticoPage() {
         </div>
       </div>
     </main>
+    </ProtectedRoute>
   )
 }

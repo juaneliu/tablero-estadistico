@@ -12,6 +12,7 @@ import { showConfirm, showSuccess, showError } from "@/lib/notifications"
 import { useToastContext } from "@/contexts/toast-context"
 import { Skeleton, TableSkeleton, MunicipioIconSkeleton } from "@/components/ui/skeleton"
 import { usePerformance } from "@/hooks/use-performance"
+import { useAuth } from "@/contexts/auth-context"
 
 // Función para obtener color basado en promedio (misma lógica que en mapa-morelos)
 const getColorByPromedio = (promedio: number): string => {
@@ -160,6 +161,7 @@ export default function TableroDiagnosticosClient({
   loading,
   onDiagnosticosUpdate
 }: TableroDiagnosticosProps) {
+  const { user } = useAuth()
   const [mounted, setMounted] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
@@ -167,6 +169,9 @@ export default function TableroDiagnosticosClient({
   const [selectedEstado, setSelectedEstado] = useState('')
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
   const { measureOperation, reportCustomMetric } = usePerformance('TableroDiagnosticos')
+
+  // Verificar si el usuario puede editar/eliminar
+  const canEdit = user?.rol !== 'INVITADO'
 
   // Toast context - siempre llamar el hook
   const toast = useToastContext()
@@ -507,12 +512,14 @@ export default function TableroDiagnosticosClient({
                 {filteredDiagnosticos?.length || 0} diagnósticos en {gruposMunicipios?.length || 0} municipios
               </p>
             </div>
-            <Link href="/dashboard/diagnosticos/crear">
-              <Button variant="secondary" size="lg">
-                <Plus className="h-5 w-5 mr-2" />
-                Nuevo Diagnóstico
-              </Button>
-            </Link>
+            {canEdit && (
+              <Link href="/dashboard/diagnosticos/crear">
+                <Button variant="secondary" size="lg">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Nuevo Diagnóstico
+                </Button>
+              </Link>
+            )}
           </div>
         </CardHeader>
       </Card>
@@ -687,15 +694,17 @@ export default function TableroDiagnosticosClient({
                               >
                                 {diagnostico.evaluacion}%
                               </div>
-                              <Link 
-                                href={`/dashboard/diagnosticos/editar/${diagnostico.id}`}
-                                onClick={(e) => e.stopPropagation()} // Evita que se expanda al hacer click en editar
-                              >
-                                <Button variant="outline" size="sm">
-                                  <Edit className="h-4 w-4 mr-1" />
-                                  Editar
-                                </Button>
-                              </Link>
+                              {canEdit && (
+                                <Link 
+                                  href={`/dashboard/diagnosticos/editar/${diagnostico.id}`}
+                                  onClick={(e) => e.stopPropagation()} // Evita que se expanda al hacer click en editar
+                                >
+                                  <Button variant="outline" size="sm">
+                                    <Edit className="h-4 w-4 mr-1" />
+                                    Editar
+                                  </Button>
+                                </Link>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -732,12 +741,14 @@ export default function TableroDiagnosticosClient({
             <p className="text-gray-600 mb-4">
               No hay diagnósticos que coincidan con los filtros seleccionados.
             </p>
-            <Link href="/dashboard/diagnosticos/crear">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Crear primer diagnóstico
-              </Button>
-            </Link>
+            {canEdit && (
+              <Link href="/dashboard/diagnosticos/crear">
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear primer diagnóstico
+                </Button>
+              </Link>
+            )}
           </CardContent>
         </Card>
       ) : null}

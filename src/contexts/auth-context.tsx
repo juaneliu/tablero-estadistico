@@ -30,6 +30,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
 
+  const guestUser: User = {
+    id: 0,
+    email: 'invitado@saem.mx',
+    nombre: 'Usuario',
+    apellido: 'Invitado',
+    rol: 'INVITADO',
+    activo: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ultimoAcceso: new Date(),
+  }
+
   const checkAuth = async () => {
     try {
       console.log('🔍 [AuthContext] Checking authentication...')
@@ -46,12 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('✅ [AuthContext] User authenticated:', data.user.email)
         setUser(data.user)
       } else {
-        console.log('❌ [AuthContext] User not authenticated')
-        setUser(null)
+        console.log('👤 [AuthContext] No user session, setting guest user.')
+        setUser(guestUser)
       }
     } catch (error) {
-      console.error('❌ [AuthContext] Error checking auth:', error)
-      setUser(null)
+      console.error('❌ [AuthContext] Error checking auth, setting guest user:', error)
+      setUser(guestUser)
     } finally {
       setIsLoading(false)
     }
@@ -87,16 +99,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: 'POST',
       })
       
-      setUser(null)
+      setUser(guestUser)
     } catch (error) {
       console.error('Logout error:', error)
       // Incluso si hay error en el servidor, limpiar estado local
-      setUser(null)
+      setUser(guestUser)
     }
   }
 
   const hasPermission = (requiredRoles: string[]): boolean => {
-    if (!user) return false
+    if (!user) return requiredRoles.includes('INVITADO')
     return requiredRoles.includes(user.rol)
   }
 

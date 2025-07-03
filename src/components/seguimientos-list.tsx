@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { useSeguimientos, type Seguimiento } from "@/hooks/use-seguimientos"
 import { showConfirm, showError } from "@/lib/notifications"
+import { useAuth } from "@/contexts/auth-context"
 
 interface SeguimientosListProps {
   acuerdoId: number
@@ -26,6 +27,7 @@ interface SeguimientosListProps {
 }
 
 export function SeguimientosList({ acuerdoId, acuerdoTema }: SeguimientosListProps) {
+  const { user } = useAuth()
   const { 
     seguimientos, 
     loading, 
@@ -33,6 +35,9 @@ export function SeguimientosList({ acuerdoId, acuerdoTema }: SeguimientosListPro
     updateSeguimiento, 
     deleteSeguimiento 
   } = useSeguimientos(acuerdoId)
+  
+  // Verificar si el usuario puede editar/eliminar
+  const canEdit = user?.rol !== 'INVITADO'
   
   const [showForm, setShowForm] = useState(false)
   const [editingSeguimiento, setEditingSeguimiento] = useState<Seguimiento | null>(null)
@@ -126,18 +131,20 @@ export function SeguimientosList({ acuerdoId, acuerdoTema }: SeguimientosListPro
             {acuerdoTema}
           </p>
         </div>
-        <Button
-          onClick={() => setShowForm(true)}
-          size="sm"
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Agregar Seguimiento
-        </Button>
+        {canEdit && (
+          <Button
+            onClick={() => setShowForm(true)}
+            size="sm"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar Seguimiento
+          </Button>
+        )}
       </div>
 
       {/* Form para agregar/editar seguimiento */}
-      {showForm && (
+      {showForm && canEdit && (
         <Card className="border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 dark:from-blue-950/50 dark:to-indigo-950/30">
           <CardHeader className="pb-4">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -227,16 +234,18 @@ export function SeguimientosList({ acuerdoId, acuerdoTema }: SeguimientosListPro
                 Sin seguimientos aún
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-500 mb-4">
-                Agrega el primer seguimiento para este acuerdo
+                {canEdit ? 'Agrega el primer seguimiento para este acuerdo' : 'No hay seguimientos registrados para este acuerdo'}
               </p>
-              <Button
-                onClick={() => setShowForm(true)}
-                variant="outline"
-                className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar Seguimiento
-              </Button>
+              {canEdit && (
+                <Button
+                  onClick={() => setShowForm(true)}
+                  variant="outline"
+                  className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Agregar Seguimiento
+                </Button>
+              )}
             </CardContent>
           </Card>
         ) : (
@@ -283,24 +292,26 @@ export function SeguimientosList({ acuerdoId, acuerdoTema }: SeguimientosListPro
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-1 ml-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(seguimiento)}
-                      className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-400"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(seguimiento)}
-                      className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-400"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {canEdit && (
+                    <div className="flex gap-1 ml-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(seguimiento)}
+                        className="h-8 w-8 p-0 hover:bg-blue-100 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-400"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(seguimiento)}
+                        className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-400"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

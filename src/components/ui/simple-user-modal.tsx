@@ -182,7 +182,7 @@ export function SimpleUserModal({
           {mode === 'view' ? (
             // Modo vista - compacto
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</Label>
                   <p className="text-sm text-gray-900 dark:text-gray-100">{user.nombre} {user.apellido}</p>
@@ -193,7 +193,7 @@ export function SimpleUserModal({
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Rol</Label>
                   <div className="mt-1">
@@ -212,7 +212,7 @@ export function SimpleUserModal({
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Creado</Label>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</p>
@@ -231,7 +231,7 @@ export function SimpleUserModal({
           ) : (
             // Modo edición - compacto
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-nombre">Nombre</Label>
                   <Input
@@ -260,7 +260,7 @@ export function SimpleUserModal({
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-rol">Rol</Label>
                   <Select 

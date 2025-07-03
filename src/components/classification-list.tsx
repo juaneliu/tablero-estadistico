@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { RefreshCw } from 'lucide-react'
 import { useEntes } from '@/hooks/use-entes'
 
 interface ClassificationItem {
@@ -27,15 +25,10 @@ export function ClassificationList() {
     tribunal: []
   })
   const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
 
-  const loadData = async (isRefresh = false) => {
+  const loadData = async () => {
     try {
-      if (isRefresh) {
-        setRefreshing(true)
-      } else {
-        setLoading(true)
-      }
+      setLoading(true)
       
       const stats = await getClassificationStatistics()
       setData(stats)
@@ -43,7 +36,6 @@ export function ClassificationList() {
       console.error('Error loading classification data:', error)
     } finally {
       setLoading(false)
-      setRefreshing(false)
     }
   }
   
@@ -52,15 +44,11 @@ export function ClassificationList() {
     
     // Auto-refresh cada 5 minutos
     const interval = setInterval(() => {
-      loadData(true)
+      loadData()
     }, 5 * 60 * 1000)
     
     return () => clearInterval(interval)
   }, [getClassificationStatistics])
-
-  const handleRefresh = () => {
-    loadData(true)
-  }
 
   if (loading) {
     return (
@@ -90,20 +78,9 @@ export function ClassificationList() {
   return (
     <Card className="col-span-3 bg-white">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold text-slate-900 tracking-wide">
-            Clasificación Entes Públicos
-          </CardTitle>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="ml-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
+        <CardTitle className="text-base font-semibold text-slate-900 tracking-wide">
+          Clasificación Entes Públicos
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Sujetos Obligados */}

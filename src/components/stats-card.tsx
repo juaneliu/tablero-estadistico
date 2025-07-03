@@ -40,17 +40,17 @@ export const StatsCard = memo(function StatsCard({
       className="glass-card hover:bg-white/95 transition-all duration-200 group hover:shadow-md"
       style={styles}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <CardTitle className="text-sm font-medium text-slate-600 tracking-wide">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3 p-3 sm:p-6">
+        <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 tracking-wide truncate pr-2">
           {title}
         </CardTitle>
         <div 
-          className="w-3 h-3 rounded-full opacity-60 group-hover:opacity-80 transition-opacity"
+          className="w-2 h-2 sm:w-3 sm:h-3 rounded-full opacity-60 group-hover:opacity-80 transition-opacity flex-shrink-0"
           style={{ backgroundColor: color }}
         />
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="text-2xl font-semibold tracking-wide text-slate-900">
+      <CardContent className="space-y-2 sm:space-y-3 p-3 sm:p-6 pt-0">
+        <div className="text-lg sm:text-2xl font-semibold tracking-wide text-slate-900">
           {value}
         </div>
         <p className="text-xs text-slate-500 tracking-wide">

@@ -70,7 +70,7 @@ function ClientOnlyMapContainer({
 
   // Durante la hidratación, siempre mostrar el fallback para evitar mismatches
   if (!hasMounted) {
-    return <div className="w-full h-[600px] flex items-center justify-center bg-slate-50 rounded-lg">
+    return <div className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] flex items-center justify-center bg-slate-50 rounded-lg">
       {fallback || (
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
@@ -81,7 +81,7 @@ function ClientOnlyMapContainer({
   }
 
   return (
-    <div suppressHydrationWarning className="w-full h-[600px]">
+    <div suppressHydrationWarning className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px]">
       {children}
     </div>
   )
