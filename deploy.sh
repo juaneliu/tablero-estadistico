@@ -8,7 +8,7 @@ echo "🚀 Iniciando deploy de Tablero Estadístico en Oracle Cloud..."
 # Variables
 APP_NAME="tablero-estadistico"
 APP_DIR="/var/www/$APP_NAME"
-REPO_URL="https://github.com/tu-usuario/tablero-estadistico.git"
+REPO_URL="https://github.com/juaneliu/tablero-estadistico.git"
 
 # Colores para output
 RED='\033[0;31m'
