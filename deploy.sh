@@ -73,7 +73,15 @@ sudo -u $APP_NAME bash -c "cd $APP_DIR && npm ci --production"
 
 # 9. Configurar variables de entorno
 log "Configurando variables de entorno..."
-sudo -u $APP_NAME cp $APP_DIR/.env.production $APP_DIR/.env
+if [ -f "$APP_DIR/.env.production.template" ]; then
+    sudo -u $APP_NAME cp $APP_DIR/.env.production.template $APP_DIR/.env
+    warning "IMPORTANTE: Edita $APP_DIR/.env con los valores correctos de producción"
+    warning "sudo -u $APP_NAME nano $APP_DIR/.env"
+else
+    warning "No se encontró .env.production.template, creando .env básico"
+    sudo -u $APP_NAME bash -c "echo 'NODE_ENV=production' > $APP_DIR/.env"
+    sudo -u $APP_NAME bash -c "echo 'PORT=3000' >> $APP_DIR/.env"
+fi
 
 # 10. Ejecutar migraciones de Prisma
 log "Ejecutando migraciones de base de datos..."
