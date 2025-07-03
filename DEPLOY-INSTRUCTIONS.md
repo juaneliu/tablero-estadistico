@@ -201,3 +201,20 @@ ls -la /var/www/tablero-estadistico/.next/static/
 # Recargar Nginx
 sudo nginx -t && sudo systemctl reload nginx
 ```
+
+## 🔐 CREDENCIALES DE ACCESO
+
+### Usuario Principal
+- **Email**: `juan.landa@saem.gob.mx`
+- **Contraseña**: `1234`
+- **Rol**: ADMINISTRADOR
+
+### Usuario Alternativo (Creado automáticamente)
+- **Email**: `admin@saem.gob.mx`
+- **Contraseña**: `admin123`
+- **Rol**: ADMINISTRADOR
+
+### 🌐 **Acceso a la Aplicación**
+1. Navega a: **http://160.34.215.19**
+2. Inicia sesión con cualquiera de los usuarios de arriba
+3. ¡Disfruta de tu sitio completamente responsivo!
